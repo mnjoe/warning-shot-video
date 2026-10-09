@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}svg{display:block}</style></head><body>
+<svg id="stage" width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"><defs id="defs"></defs><g id="root"></g></svg>
+<script src="core.js"></script>
+<script src="timeline.js"></script>
+<script src="scenes/chorus.js"></script>
+<script>
+// Shot list in song order. Add sections here as they get built.
+const SHOTS = [
+  ...chorusShots(SONG.chorus.one, false),
+  ...chorusShots(SONG.chorus.two, true),
+].sort((a, b) => a.a - b.a);
+const LYRICS = [
+  ...chorusLyrics(SONG.chorus.one.lyr),
+  ...chorusLyrics(SONG.chorus.two.lyr),
+];
+function render(t) {
+  const sh = SHOTS.find(s => t >= s.a && t < s.b) || SHOTS[SHOTS.length - 1];
+  const lt = t - sh.a, r = sh.fn(t, lt);
+  let out = r.svg;
+  if (sh.chyron) out += R.chyron(lt, sh.chyron[0], sh.chyron[1]);
+  const ly = LYRICS.find(L => t >= L.a && t < L.b);
+  if (ly && !ly.hide) out += R.lyrics(t, ly);
+  out += R.liveTag(t, r.live || 'live') + R.bug(t) + R.ticker(t, SONG.ticker.items, SONG.ticker.start);
+  document.getElementById('root').innerHTML = out;
+  return sh.id;
+}
+const theme = new URLSearchParams(location.search).get('theme') || 'pirate-flat';
+window.READY = activateTheme(theme).then(() => { document.getElementById('defs').innerHTML = R.defs(); return theme; });
+</script></body></html>
