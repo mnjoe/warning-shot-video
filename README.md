@@ -81,7 +81,7 @@ Check a theme with `--stills` before rendering video. Label boxes size to their 
 - `lyrics`: `size, shoutSize, stroke, shoutStroke, y, lineGap`.
 - `ticker`: `speed, size`.
 - `flashback`: feColorMatrix values for flashbacks (sepia by default).
-- `copy`: theme flavor text: `network, networkFull, liveFrom, masthead, earlier, live, replay`. Scenes read it with `copy(k)`. Story text lives in `SONG.labels` and `SONG.headlines`, not here.
+- `copy`: theme flavor text: `clunk, network, networkFull, liveFrom, masthead, earlier, live, replay`. Scenes read it with `copy(k)`. Story text lives in `SONG.labels` and `SONG.headlines`, not here.
 
 ## Theme contract (rigs every theme must provide)
 
@@ -90,7 +90,7 @@ Inherited from `pirate-flat` unless overridden. `t` is song time in seconds, `lt
 | Rig | Inputs |
 |---|---|
 | `defs()` | returns `<defs>` content; must define `#sky`, `#vig`, `#flashback` |
-| `bot(o)` | `x, y` (feet), `s`, `t`, `variant, phase, sway, tankard, sing, walk, whistle, flip, shrug, look, frown, stomp (0 to 1 leg kick), stompSide (1 right, -1 left), squash (0 to 1)` |
+| `bot(o)` | `x, y` (feet), `s`, `t`, `variant, phase, sway, tankard, sing, walk, whistle, flip, shrug, look, frown, stomp (0 to 1 leg kick), stompSide (1 right, -1 left), squash (0 to 1), armsUp (0 to 1 overhead), barbell, lean (torso degrees about the hips), legRot (degrees)` |
 | `hand(o)` | `x, y, s, rot, curl (0 flat to 1 gripping), label` (on the badge); the sleeve must run off frame |
 | `cannon(o)` | `x, y, s, angle, fire (seconds since firing or null), label` |
 | `cannonball(x, y)` | |
@@ -110,6 +110,14 @@ Inherited from `pirate-flat` unless overridden. `t` is song time in seconds, `lt
 | `ship(o)` | full side view, bow right: `x, y (waterline), s, t, rot, label, crew (bots on deck), tow ({label, hole}), flag` |
 | `wake(t, x, y, len, s)` | foam trail astern |
 | `buoy(o)` | target buoy with flag: `x, y (waterline), s, t, label` |
+| `plaque(o)` | brass sign hanging on ropes from above the frame: `x, y (board center), s, text, swing` |
+| `gymMat(x, y, w)` | exercise mat |
+| `route(x1, y1, cx, cy, x2, y2, p, style)` | dotted course line drawn on to `p`; `style` `'go'` (red) or `'back'` (brass) |
+| `pointer(x, y, t, k)` | bouncing arrow pointing down at `x, y` |
+| `sfx(x, y, k, text, rot, size)` | comic sound-effect word (`copy('clunk')`) or a "?" |
+| `cabinWall(t)` | full-frame ship's cabin wall |
+| `controlPanel(o)` | lever panel: `x, y, s, levers: [{label, off (0 to 1), lamp (0 to 1)}]`; long labels wrap to two lines |
+| `panelKnob(o, i, off)` | screen position of lever `i`'s knob, so a scene can put the hand on it |
 
 Lyric lines may set `reserve: true` so words that have not appeared yet still hold their space (the count-in uses it; the chorus does not).
 Shots may set `chrome: false` to hide the LIVE tag, bug and ticker (the cold open does). The chrome slides in at I-2.
@@ -143,7 +151,8 @@ Claude can't listen, so EST times are located from the audio and then confirmed 
 |---|---|---|
 | Intro | I-1, I-3, I-2 | approved |
 | Chorus 1 and 2 | C-1 to C-6 | approved; C-3 arm comes in from the side; Chorus 2 times confirmed by ear |
-| Verse 1 | V1-1 to V1-4 | next |
+| Verse 1 | V1-1 to V1-4 | approved; V1-3/V1-4 cut moved to 25.37; sign drop and clunks set by ear |
+| Verse 2 | V2-1 to V2-6 | next |
 | Everything else | | not started; build in song order |
 
 Times still marked EST in `timeline.js` should be checked by ear as their sections are built.

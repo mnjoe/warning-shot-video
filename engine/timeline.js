@@ -46,6 +46,16 @@ const SONG = {
     count: [2.45, 2.95, 3.46, 3.97],   // measured onsets of "One, two, three, four!"
     wipe: [1.95, 2.45],                // parchment wipe starts on the big hit at 1.95
   },
+  verse1: {
+    // V1-1 gym, V1-2 target, V1-3 levers, V1-4 shrug. The V1-3/V1-4 cut moved from 23.89 to 25.37 (beat, inside the
+    // drum stop before "what's the worst") so the third lever lands on its own words. Approved change, 2026-10-09.
+    cuts: [11.98, 16.42, 19.92, 25.37, 27.86],
+    // line starts and EST half-line splits: [l1, l1b, l2, l2b, l3, l3b, l4, l4b, end]
+    lyr: [12.05, 14.28, 16.28, 18.13, 19.86, 21.85, 23.80, 25.61, 27.86],   // l1b, l2b, l3b, l4b are EST (vocal onsets)
+    signDrop: 14.98,                // guitar chord, Joe's ear (beat 29.12)
+    clunks: [20.48, 22.55, 24.48],  // guitar hits, Joe's ear (beats 40.17, 44.32, 48.20); the third lands in the drum stop
+    turn: 25.55, shrug: 26.35, huh: [26.85, 27.35],   // the kicks come back on "WORST" at 26.35
+  },
   chorus: {
     // cuts: C-1..C-6 starts + end. fireAt: crowd shout. lyr: [l1, shout, l2, l3, l3b, l4, l5, l6, l6b, end]
     one: {
@@ -65,6 +75,17 @@ function introLyrics(I) {
   const [c1, c2, c3, c4] = I.count;
   const w = (s, at) => ({ s, style: 'shout', at });
   return [{ a: c1 - 0.05, b: I.cuts[2] - 0.1, lines: [Object.assign([w('One, ', c1), w('two, ', c2), w('three, ', c3), w('four!', c4)], { reserve: true })] }];
+}
+
+function verse1Lyrics(L) {
+  const [l1, l1b, l2, l2b, l3, l3b, l4, l4b, end] = L;
+  const two = (a, b, s1, s2, at) => ({ a, b, lines: [[{ s: s1 }], Object.assign([{ s: s2 }], { at })] });
+  return [
+    two(l1, l2, 'Oh, they built a gym for hackers', 'and they named it ExploitGym,', l1b),
+    two(l2, l3, 'Said, “Break into this target,', 'grab the flag, and bring it in!”', l2b),
+    two(l3, l4, 'Then they switched off the classifiers,', 'they switched off the review,', l3b),
+    two(l4, end, 'Unplugged the chain-of-thought monitor...', 'what’s the worst a bot could do?', l4b),
+  ];
 }
 
 function chorusLyrics(L) {

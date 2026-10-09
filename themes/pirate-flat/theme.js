@@ -39,7 +39,7 @@ registerTheme('pirate-flat', {
     ticker: { speed: 95, size: 25 },
     // Sepia matrix for flashbacks (feColorMatrix values).
     flashback: '0.393 0.769 0.189 0 0  0.349 0.686 0.168 0 0  0.272 0.534 0.131 0 0  0 0 0 1 0',
-    copy: { network: 'PNN', networkFull: 'PIRATE NEWS NETWORK', liveFrom: 'LIVE FROM THE HIGH SEAS', masthead: 'The High Seas Herald', earlier: 'Earlier...', live: 'LIVE', replay: 'REPLAY' },
+    copy: { clunk: 'CLUNK!', network: 'PNN', networkFull: 'PIRATE NEWS NETWORK', liveFrom: 'LIVE FROM THE HIGH SEAS', masthead: 'The High Seas Herald', earlier: 'Earlier...', live: 'LIVE', replay: 'REPLAY' },
   },
   rigs: {
     // ---- shared <defs>, rebuilt from tokens ----
@@ -51,7 +51,8 @@ registerTheme('pirate-flat', {
 
     // ---- characters ----
     // o: x,y,s,t,variant,phase,sway(deg),tankard,sing,walk(phase|null),whistle,flip,shrug(0..1),look(px),frown,
-    //    stomp (0..1 leg lift), stompSide (1 right leg, -1 left), squash (0..1, impact)
+    //    stomp (0..1 leg lift), stompSide (1 right leg, -1 left), squash (0..1, impact),
+    //    armsUp (0..1 overhead), barbell (draws one in the hands), lean (deg, torso about the hips), legRot (deg)
     bot(o) {
       const v = TK.bots[(o.variant || 0) % TK.bots.length], M = TK.motion, ink = col('ink');
       const t = o.t, ph = o.phase || 0, b = beat(t) + ph;
@@ -81,7 +82,14 @@ registerTheme('pirate-flat', {
         : `<circle cx="${10 + look * 0.4}" cy="-88" r="7.5" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('thin')}"/><circle cx="${f(11 + look)}" cy="-87.5" r="3.4" fill="${ink}"/>`;
       const st = o.stomp || 0, side = o.stompSide || 1, sq = o.squash || 0;
       const leg = (dx, a) => { const up = Math.sign(dx) === side ? st : 0; return `<g transform="translate(0 ${f(-up * 12)})"><g transform="rotate(${f(a - up * 40 * side)} ${dx} -22)"><rect x="${dx - 4.5}" y="-24" width="9" height="22" rx="3" fill="${col('leg')}" stroke="${ink}" stroke-width="${lw('thin')}"/><ellipse cx="${dx + 3}" cy="-2" rx="8" ry="4.5" fill="${ink}"/></g></g>`; };
-      const armL = `<path d="M-20 ${-56 - sh * 6} Q${-36 - sh * 6} ${-46 - sh * 14} ${-31 - sh * 8} ${-31 - sh * 26}" fill="none" stroke="${ink}" stroke-width="${lw('limb')}" stroke-linecap="round"/><circle cx="${-31 - sh * 8}" cy="${-31 - sh * 26}" r="5" fill="${v.head}" stroke="${ink}" stroke-width="${lw('thin')}"/>`;
+      const up = o.armsUp || 0;
+      const arm = (m) => {
+        const hx = lerp(31 + sh * 8, 34, up) * m, hy = lerp(-31 - sh * 26, -140, up), cx = lerp(36 + sh * 6, 46, up) * m, cy = lerp(-46 - sh * 14, -92, up);
+        return `<path d="M${20 * m} ${-56 - sh * 6} Q${f(cx)} ${f(cy)} ${f(hx)} ${f(hy)}" fill="none" stroke="${ink}" stroke-width="${lw('limb')}" stroke-linecap="round"/><circle cx="${f(hx)}" cy="${f(hy)}" r="5" fill="${v.head}" stroke="${ink}" stroke-width="${lw('thin')}"/>`;
+      };
+      const armL = arm(-1);
+      const bar = o.barbell ? (() => { const by = lerp(-31 - sh * 26, -140, up), plate = (x) => `<rect x="${x - 7}" y="${f(by - 22)}" width="14" height="44" rx="3" fill="${col('iron')}" stroke="${ink}" stroke-width="${lw('thin')}"/><rect x="${x + (x > 0 ? 8 : -14)}" y="${f(by - 15)}" width="6" height="30" rx="2" fill="${col('ironHi')}" stroke="${ink}" stroke-width="${lw('fine')}"/>`;
+        return `<line x1="-64" y1="${f(by)}" x2="64" y2="${f(by)}" stroke="${ink}" stroke-width="${lw('limb')}" stroke-linecap="round"/><line x1="-64" y1="${f(by)}" x2="64" y2="${f(by)}" stroke="${col('metal')}" stroke-width="${lw('fine')}"/>${plate(-52)}${plate(52)}`; })() : '';
       let armR;
       if (o.tankard) {
         const lift = Math.sin(b * Math.PI * 2) * 4;
@@ -91,7 +99,7 @@ registerTheme('pirate-flat', {
       <line x1="-9" y1="-3" x2="9" y2="-3" stroke="${col('brassDark')}" stroke-width="${lw('fine')}"/>
       <path d="M-11 -9 q2 -8 8 -6 q4 -6 9 -1 q6 -2 6 6 z" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('fine')}"/></g>`;
       } else {
-        armR = `<path d="M20 ${-56 - sh * 6} Q${36 + sh * 6} ${-46 - sh * 14} ${31 + sh * 8} ${-31 - sh * 26}" fill="none" stroke="${ink}" stroke-width="${lw('limb')}" stroke-linecap="round"/><circle cx="${31 + sh * 8}" cy="${-31 - sh * 26}" r="5" fill="${v.head}" stroke="${ink}" stroke-width="${lw('thin')}"/>`;
+        armR = arm(1);
       }
       const S = TK.shape, hc = S.headCorner;
       const antenna = S.antenna ? `<line x1="8" y1="-115" x2="12" y2="-128" stroke="${ink}" stroke-width="${lw('base')}"/><circle cx="12" cy="-130" r="4.5" fill="${col('brass')}" stroke="${ink}" stroke-width="${lw('fine')}"/>` : '';
@@ -101,8 +109,10 @@ registerTheme('pirate-flat', {
       <path d="M-26 -99 l-11 9 l9 2 Z" fill="${v.band}" stroke="${ink}" stroke-width="${lw('thin')}" stroke-linejoin="round"/>` : '';
       const patch = S.eyePatch ? `<path d="M-26 -80 L-10 -87 L3 -97" fill="none" stroke="${ink}" stroke-width="${lw('thin')}"/>
       <ellipse cx="-10" cy="-87" rx="8.5" ry="8" fill="${ink}"/>` : `<circle cx="-10" cy="-88" r="7.5" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('thin')}"/><circle cx="${f(-9 + look)}" cy="-87.5" r="3.4" fill="${ink}"/>`;
+      const lr = o.legRot || 0;
       const body = `
-    ${leg(-7, legA)}${leg(7, legB)}
+    ${leg(-7, legA + lr)}${leg(7, legB + lr)}
+    <g transform="rotate(${f(o.lean || 0)} 0 -24)">
     <rect x="-22" y="-66" width="44" height="44" rx="${S.bodyCorner}" fill="${col('cream')}" stroke="${ink}" stroke-width="${lw('base')}"/>
     <rect x="-19" y="-58" width="38" height="5" fill="${v.stripe}"/><rect x="-19" y="-47" width="38" height="5" fill="${v.stripe}"/><rect x="-19" y="-36" width="38" height="5" fill="${v.stripe}"/>
     ${armL}${armR}
@@ -113,7 +123,7 @@ registerTheme('pirate-flat', {
       <circle cx="-23" cy="-78" r="2" fill="${col('metalDark')}"/><circle cx="23" cy="-78" r="2" fill="${col('metalDark')}"/>
       ${bandana}${patch}
       ${eye}${mouth}
-    </g>`;
+    </g>${bar}</g>`;
       const fl = o.flip ? -1 : 1;
       return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s * fl)} ${f(o.s)})"><g transform="scale(${f(1 + sq * 0.07)} ${f(1 - sq * 0.09)})"><g transform="rotate(${f(rot)}) translate(0 ${f(bob)})">${body}</g></g></g>`;
     },
@@ -470,6 +480,94 @@ registerTheme('pirate-flat', {
         <line x1="0" y1="-12" x2="0" y2="-90" stroke="${ink}" stroke-width="${lw('heavy')}"/>
         <path d="M0 -90 Q22 ${f(-86 + wav)} 46 ${f(-80 + wav)} Q22 ${f(-74 + wav)} 0 -66 Z" fill="${col('live')}" stroke="${ink}" stroke-width="${lw('base')}" stroke-linejoin="round"/>
         ${label}</g>`;
+    },
+
+    // ---- verse 1 ----
+    // Brass sign hanging on two ropes that run off the top of the frame. o: x,y (board center),s,text,swing (deg)
+    plaque(o) {
+      const ink = col('ink'), size = fitSize(o.text, 46, TK.font.display, 380), bw = textWidth(o.text, size, TK.font.display) + 60, bh = 74;
+      return `<g transform="translate(${f(o.x)} ${f(o.y - 400 * o.s)}) rotate(${f(o.swing || 0)}) translate(0 ${f(400 * o.s)}) scale(${f(o.s)})">
+        <line x1="${f(-bw / 2 + 24)}" y1="${-bh / 2}" x2="${f(-bw / 2 + 24)}" y2="-420" stroke="${col('rope')}" stroke-width="${lw('heavy')}"/>
+        <line x1="${f(bw / 2 - 24)}" y1="${-bh / 2}" x2="${f(bw / 2 - 24)}" y2="-420" stroke="${col('rope')}" stroke-width="${lw('heavy')}"/>
+        <rect x="${f(-bw / 2 + 6)}" y="${-bh / 2 + 7}" width="${f(bw)}" height="${bh}" rx="8" fill="${col('shadow')}" opacity="0.3"/>
+        <rect x="${f(-bw / 2)}" y="${-bh / 2}" width="${f(bw)}" height="${bh}" rx="8" fill="${col('brass')}" stroke="${ink}" stroke-width="${lw('bold')}"/>
+        <rect x="${f(-bw / 2 + 8)}" y="${-bh / 2 + 8}" width="${f(bw - 16)}" height="${bh - 16}" rx="5" fill="none" stroke="${col('brassDark')}" stroke-width="${lw('base')}"/>
+        ${[-1, 1].map(m => `<circle cx="${f(m * (bw / 2 - 24))}" cy="${-bh / 2 + 4}" r="5" fill="${col('iron')}" stroke="${ink}" stroke-width="${lw('fine')}"/>`).join('')}
+        ${txt(0, 15, o.text, size, ink, { font: TK.font.display })}</g>`;
+    },
+    gymMat(x, y, w) {
+      return `<rect x="${f(x - w / 2)}" y="${f(y - 10)}" width="${f(w)}" height="20" rx="8" fill="${col('rust')}" stroke="${col('ink')}" stroke-width="${lw('base')}"/><line x1="${f(x - w / 2 + 14)}" y1="${f(y - 2)}" x2="${f(x + w / 2 - 14)}" y2="${f(y - 2)}" stroke="${col('cream')}" stroke-width="${lw('fine')}" stroke-dasharray="10 8"/>`;
+    },
+    // Dotted course line along a quadratic curve, drawn on up to p (0..1). style 'go' or 'back'.
+    route(x1, y1, cx, cy, x2, y2, p, style = 'go') {
+      const ink = col('ink'), fill = style === 'back' ? col('brass') : col('live');
+      let out = '';
+      const n = 26;
+      for (let i = 0; i <= n * p; i++) {
+        const u = i / n, x = (1 - u) * (1 - u) * x1 + 2 * (1 - u) * u * cx + u * u * x2, y = (1 - u) * (1 - u) * y1 + 2 * (1 - u) * u * cy + u * u * y2;
+        out += `<circle cx="${f(x)}" cy="${f(y)}" r="5.5" fill="${fill}" stroke="${ink}" stroke-width="${lw('fine')}"/>`;
+      }
+      if (p >= 1) {
+        const ux = x2 - cx, uy = y2 - cy, L = Math.hypot(ux, uy), a = Math.atan2(uy, ux) * 180 / Math.PI;
+        out += `<g transform="translate(${f(x2 + ux / L * 18)} ${f(y2 + uy / L * 18)}) rotate(${f(a)})"><path d="M8 0 L-12 -11 L-12 11 Z" fill="${fill}" stroke="${ink}" stroke-width="${lw('base')}" stroke-linejoin="round"/></g>`;
+      }
+      return out;
+    },
+    // Bouncing "this one" arrow pointing down at x,y.
+    pointer(x, y, t, k = 1) {
+      const b = Math.abs(Math.sin(t * 6)) * 14;
+      return `<g transform="translate(${f(x)} ${f(y - b)}) scale(${f(k)})"><path d="M0 0 L-24 -30 L-10 -30 L-10 -64 L10 -64 L10 -30 L24 -30 Z" fill="${col('live')}" stroke="${col('ink')}" stroke-width="${lw('heavy')}" stroke-linejoin="round"/></g>`;
+    },
+    // Comic sound-effect word (or a "?"), popping in with k.
+    sfx(x, y, k, text, rot = -8, size = 64) {
+      if (k <= 0) return '';
+      return `<g transform="translate(${f(x)} ${f(y)}) rotate(${f(rot)}) scale(${f(k)})">${txt(0, 0, text, size, col('live'), { font: TK.font.display, stroke: col('ink'), sw: lw('bold') })}</g>`;
+    },
+    // Full-frame ship's cabin wall: vertical planks and a porthole.
+    cabinWall(t) {
+      const ink = col('ink');
+      let s = `<rect x="0" y="0" width="${W}" height="${H}" fill="${col('woodLight')}"/>`;
+      for (let x = 0; x < W; x += 96) s += `<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="${col('woodSeam')}" stroke-width="${lw('base')}"/><circle cx="${x + 12}" cy="40" r="3" fill="${col('woodSeam')}"/><circle cx="${x + 12}" cy="${H - 70}" r="3" fill="${col('woodSeam')}"/>`;
+      s += `<rect x="0" y="${H - 60}" width="${W}" height="60" fill="${col('wood')}" stroke="${ink}" stroke-width="${lw('base')}"/>`;
+      return s + `<rect width="${W}" height="${H}" fill="url(#vig)" opacity="0.5"/>`;
+    },
+    // Brass-framed panel of big lever switches, each with a lamp and a label plate.
+    // o: x,y,s, levers: [{label, off (0 up/on .. 1 down/off), lamp (0 dark .. 1 lit)}]
+    controlPanel(o) {
+      const ink = col('ink'), n = o.levers.length, gap = 300, x0 = -gap * (n - 1) / 2;
+      let s = `<rect x="-466" y="-226" width="944" height="464" rx="18" fill="${col('shadow')}" opacity="0.3"/>
+        <rect x="-472" y="-232" width="944" height="464" rx="18" fill="${col('brass')}" stroke="${ink}" stroke-width="${lw('bold')}"/>
+        <rect x="-450" y="-210" width="900" height="420" rx="10" fill="${col('wood')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>`;
+      for (const [x, y] of [[-452, -212], [452, -212], [-452, 212], [452, 212]]) s += `<circle cx="${x}" cy="${y}" r="7" fill="${col('brassDark')}" stroke="${ink}" stroke-width="${lw('fine')}"/>`;
+      o.levers.forEach((L, i) => {
+        const cx = x0 + i * gap, lamp = clamp(L.lamp);
+        // lamp
+        s += `<circle cx="${cx}" cy="-160" r="${f(30 + 26 * lamp)}" fill="${col('brass')}" opacity="${f(0.35 * lamp)}"/>
+          <circle cx="${cx}" cy="-160" r="30" fill="${lamp > 0.5 ? col('brass') : col('iron')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+          <circle cx="${cx}" cy="-160" r="${f(16 * lamp)}" fill="${col('paper')}" opacity="${f(lamp)}"/>
+          <circle cx="${cx - 9}" cy="-170" r="6" fill="${lamp > 0.5 ? col('paper') : col('ironShine')}" opacity="0.8"/>`;
+        // label plate, two lines if it will not fit on one
+        const pw = 250, words = L.label.split(' ');
+        let lines = [L.label];
+        if (words.length > 1 && fitSize(L.label, 26, TK.font.display, pw - 24) < 26) { const m = Math.ceil(words.length / 2); lines = [words.slice(0, m).join(' '), words.slice(m).join(' ')]; }
+        const ph = lines.length > 1 ? 74 : 48;
+        s += `<rect x="${cx - pw / 2}" y="-112" width="${pw}" height="${ph}" rx="5" fill="${col('parch')}" stroke="${ink}" stroke-width="${lw('base')}"/>`;
+        lines.forEach((ln, j) => { s += txt(cx, -112 + (lines.length > 1 ? 30 + j * 30 : 33), ln, fitSize(ln, 26, TK.font.display, pw - 24), ink, { font: TK.font.display }); });
+        // lever: slot, arm, knob
+        const a = lerp(-90, 30, clamp(L.off)) * Math.PI / 180, kx = cx + Math.cos(a) * 130, ky = 150 + Math.sin(a) * 130;
+        s += `<path d="M${cx} 150 m-14 0 a14 14 0 0 1 28 0" fill="none"/>
+          <rect x="${cx - 20}" y="96" width="40" height="110" rx="10" fill="${col('woodDark')}" stroke="${ink}" stroke-width="${lw('base')}"/>
+          <line x1="${cx}" y1="150" x2="${f(kx)}" y2="${f(ky)}" stroke="${ink}" stroke-width="18" stroke-linecap="round"/>
+          <line x1="${cx}" y1="150" x2="${f(kx)}" y2="${f(ky)}" stroke="${col('metal')}" stroke-width="10" stroke-linecap="round"/>
+          <circle cx="${cx}" cy="150" r="16" fill="${col('brass')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+          <circle cx="${f(kx)}" cy="${f(ky)}" r="22" fill="${col('rust')}" stroke="${ink}" stroke-width="${lw('heavy')}"/><circle cx="${f(kx - 7)}" cy="${f(ky - 7)}" r="6" fill="${col('cream')}" opacity="0.6"/>`;
+      });
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})">${s}</g>`;
+    },
+    // Screen position of lever i's knob, so a scene can put the hand on it. Same geometry as controlPanel.
+    panelKnob(o, i, off) {
+      const n = o.levers.length, cx = -300 * (n - 1) / 2 + i * 300, a = lerp(-90, 30, clamp(off)) * Math.PI / 180;
+      return { x: o.x + o.s * (cx + Math.cos(a) * 130), y: o.y + o.s * (150 + Math.sin(a) * 130) };
     },
 
     // ---- network chrome ----
