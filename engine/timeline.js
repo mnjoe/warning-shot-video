@@ -18,7 +18,7 @@ const SONG = {
   },
   // On-screen labels the storyboard specifies. Story content, not style: every theme shows these words.
   labels: {
-    ship: 'OPENAI', sandbox: 'SANDBOX', cannon: 'WARNING SHOT', hand: 'US',
+    ship: 'OPENAI', sandbox: 'SANDBOX', cannon: 'WARNING SHOT', hand: 'AI LAB',
     rogueHeadline: 'IT WENT ROGUE!', biggest: '“The biggest in the field!”',
   },
   chyrons: {

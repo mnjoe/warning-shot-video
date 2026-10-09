@@ -46,7 +46,7 @@ render.py               stills, contact sheets, video, audio mux
 | `newsprint` | Token-only override: palette, fonts, line weight, bot head shape. |
 | `lab-glove` | Rig override: replaces only `hand()` (lab-coat sleeve, ID badge, blue nitrile glove, jointed fingers). Everything else inherited. |
 
-Story words such as the hand's "US" label live in `SONG.labels` in `timeline.js`, not in a theme. Changing one changes it in every theme.
+Story words such as the hand's "AI LAB" label live in `SONG.labels` in `timeline.js`, not in a theme. Changing one changes it in every theme.
 
 ## Making a new theme
 
