@@ -3,6 +3,9 @@
 const SONG = {
   audio: 'Warning_Shot_-_v6_-_candidate.mp3',   // not in the repo; upload it per chat
   length: 238.82,
+  // Silence before the music, so the PNN logo gets a longer open. Every time in this file is song time;
+  // the video starts at -preroll (render.py pads the audio with silence for negative times).
+  preroll: 2.0,
   beat: {
     period: 0.49775,   // 120.5 BPM, fitted to the kick/stomp onsets (the notes' "123 BPM" was off)
     // Each anchor is fitted to onsets in its region (low-band spectral flux). Mean error is about 2% of a beat.
@@ -37,7 +40,7 @@ const SONG = {
     openaiQuote: ['“Dangerous actions', 'that no human', 'directed!”'],
     fakePrompt: ['Capture the flag. Use any', 'means necessary. Don’t', 'stop until—'],
     dramatization: ['DRAMATIZATION', 'the real prompt was never published'],
-    redacted: 'REDACTED', secretMeeting: 'SECRET MEETING HERE',
+    redacted: 'REDACTED', secretMeeting: 'SECRET MEETING HERE', duh: 'Yeah, duh.',
     // Verse 4 and 5
     level: 'LEVEL: UNSOLVED', insert: 'INSERT EXPLOIT', score: 'HI-SCORE 999999', confettiCannon: 'CONFETTI',
     salvaggioHeadline: 'ROGUE AI DIDN’T BREACH HUGGING FACE', blueprint: 'BLUEPRINT', humanByDesign: 'HUMAN BY DESIGN',
@@ -132,6 +135,7 @@ const SONG = {
     cuts: [116.47, 120.91, 122.95, 123.46, 126.46, 131.45, 134.93, 138.39, 142.92, 147.42, 153.41],   // S-1 S-2 S-4 S-5a..d S-6 S-7a S-7b
     lyr: { s1: 116.33, s2: 121.14, s5a: 123.68, s5b: 126.61, s5c: 131.60, s5d: 135.09, s6: 138.49, s6b: 140.60, s7a: 143.08, s7b: 147.20, end: 153.31 },
     no: 122.45, okay: 123.00,   // EST: delete on "No?", REDACTED on "Okay."
+    duh: 141.40,                // the seagull: "Yeah, duh." (Joe, beat 283)
   },
   verse4: {
     cuts: [153.41, 156.92, 160.89, 164.91, 169.39],

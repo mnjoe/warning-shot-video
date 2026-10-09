@@ -57,7 +57,8 @@ registerTheme('pirate-flat', {
     // ---- characters ----
     // o: x,y,s,t,variant,phase,sway(deg),tankard,sing,walk(phase|null),whistle,flip,shrug(0..1),look(px),frown,
     //    stomp (0..1 leg lift), stompSide (1 right leg, -1 left), squash (0..1, impact),
-    //    armsUp (0..1 overhead), barbell (draws one in the hands), lean (deg, torso about the hips), legRot (deg), backpack
+    //    armsUp (0..1 overhead), barbell (draws one in the hands), lean (deg, torso about the hips), legRot (deg), backpack,
+    //    tricorn (true: the officers' hat, far too big, brim down over the eye), hatTilt (deg)
     bot(o) {
       const v = TK.bots[(o.variant || 0) % TK.bots.length], M = TK.motion, ink = col('ink');
       const t = o.t, ph = o.phase || 0, b = beat(t) + ph;
@@ -129,7 +130,8 @@ registerTheme('pirate-flat', {
       <rect x="-26" y="-114" width="52" height="44" rx="${hc}" fill="${v.head}" stroke="${ink}" stroke-width="${lw('base')}"/>
       <circle cx="-23" cy="-78" r="2" fill="${col('metalDark')}"/><circle cx="23" cy="-78" r="2" fill="${col('metalDark')}"/>
       ${bandana}${patch}
-      ${eye}${mouth}
+      ${o.tricorn ? '' : eye}${mouth}
+      ${o.tricorn ? `<g transform="rotate(${f(o.hatTilt || 0)} 0 -100)">${R.tricorn({ x: 0, y: -86, s: 1 })}</g>` : ''}
     </g>${bar}</g>`;
       const fl = o.flip ? -1 : 1;
       return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s * fl)} ${f(o.s)})"><g transform="scale(${f(1 + sq * 0.07)} ${f(1 - sq * 0.09)})"><g transform="rotate(${f(rot)}) translate(0 ${f(bob)})">${body}</g></g></g>`;

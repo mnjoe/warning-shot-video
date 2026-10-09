@@ -61,8 +61,10 @@ with sync_playwright() as p:
 
 if a.audio:
     d = a.t1 - a.t0
-    subprocess.run(['ffmpeg', '-y', '-v', 'error', '-ss', str(a.t0), '-t', str(d), '-i', a.audio, '-vn',
-                    '-af', f'afade=t=in:d=0.15,afade=t=out:st={max(0, d - 0.43):.2f}:d=0.43', '-c:a', 'aac', '-b:a', '192k', a.out + '.m4a'], check=True)
+    pad = max(0.0, -a.t0)   # pre-roll: negative song time is silence before the track starts
+    fx = f'adelay={int(round(pad * 1000))}:all=1,' if pad else 'afade=t=in:d=0.15,'
+    subprocess.run(['ffmpeg', '-y', '-v', 'error', '-ss', str(max(0.0, a.t0)), '-t', str(d - pad), '-i', a.audio, '-vn',
+                    '-af', fx + f'apad,atrim=0:{d:.3f},afade=t=out:st={max(0, d - 0.43):.2f}:d=0.43', '-c:a', 'aac', '-b:a', '192k', a.out + '.m4a'], check=True)
     subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', silent, '-i', a.out + '.m4a', '-map', '0:v', '-map', '1:a',
                     '-c', 'copy', '-shortest', '-movflags', '+faststart', a.out], check=True)
     os.remove(silent); os.remove(a.out + '.m4a')

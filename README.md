@@ -18,6 +18,10 @@ python3 render.py --theme newsprint --from 27.86 --to 44.79 --audio song.mp3 --o
 python3 render.py --theme pirate-flat --from 0 --to 11.98 --audio song.mp3 --debug --out intro-test.mp4   # review render
 ```
 
+**Pre-roll.** `SONG.preroll` (2.0 s) is silence before the music, so the PNN logo gets a longer open. All times stay in
+song time; the video starts at `-preroll`. Render the whole thing with `--from=-2 --to 238.82 --audio song.mp3`
+(negative `--from` pads the audio with silence; use the `=` form so the minus sign isn't read as a flag).
+
 `--debug` burns the shot id, song time and beat number into the lower right so timing notes can be exact ("move V1-3 two frames later"). Use it for stills and test renders only, never for the final.
 
 Needs Python Playwright with Chromium, ffmpeg, and Pillow (all present in Claude's sandbox).
@@ -90,7 +94,7 @@ Inherited from `pirate-flat` unless overridden. `t` is song time in seconds, `lt
 | Rig | Inputs |
 |---|---|
 | `defs()` | returns `<defs>` content; must define `#sky`, `#vig`, `#flashback` |
-| `bot(o)` | `x, y` (feet), `s`, `t`, `variant, phase, sway, tankard, sing, walk, whistle, flip, shrug, look, frown, stomp (0 to 1 leg kick), stompSide (1 right, -1 left), squash (0 to 1), armsUp (0 to 1 overhead), barbell, lean (torso degrees about the hips), legRot (degrees), backpack` |
+| `bot(o)` | `x, y` (feet), `s`, `t`, `variant, phase, sway, tankard, sing, walk, whistle, flip, shrug, look, frown, stomp (0 to 1 leg kick), stompSide (1 right, -1 left), squash (0 to 1), armsUp (0 to 1 overhead), barbell, lean (torso degrees about the hips), legRot (degrees), backpack, tricorn (the officers' hat, far too big, brim over the eye), hatTilt` |
 | `hand(o)` | `x, y, s, rot, curl (0 flat to 1 gripping), label` (on the badge); the sleeve must run off frame |
 | `cannon(o)` | `x, y, s, angle, fire (seconds since firing or null), label` |
 | `cannonball(x, y)` | |

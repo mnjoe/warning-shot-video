@@ -44,10 +44,11 @@ function chrome(t, r) {
     + `<g transform="translate(0 ${f(48 * (1 - k))})">${R.ticker(t, SONG.ticker.items, SONG.ticker.start)}</g>`;
 }
 // Review aid for test renders only (render.py --debug): shot id, song time, beat. Tooling, not part of any theme.
-function debugTag(t, id) {
-  const b = beat(t), s = `${id}   ${t.toFixed(2)}s   beat ${b.toFixed(2)}`;
-  return `<g><rect x="${W - 372}" y="628" width="356" height="34" rx="4" fill="#000" opacity="0.7"/>`
-    + `<text x="${W - 26}" y="652" font-family="monospace" font-size="20" fill="#fff" text-anchor="end">${s}</text></g>`;
+function debugTag(t, id, top) {
+  const b = beat(t), s = `${id}   ${t.toFixed(2)}s   beat ${b.toFixed(2)}`, y = top ? 34 : 628;
+  const x = top ? 30 : W - 372;
+  return `<g><rect x="${x}" y="${y}" width="356" height="34" rx="4" fill="#000" opacity="0.7"/>`
+    + `<text x="${x + 346}" y="${y + 24}" font-family="monospace" font-size="20" fill="#fff" text-anchor="end">${s}</text></g>`;
 }
 function render(t, dbg) {
   const sh = SHOTS.find(s => t >= s.a && t < s.b) || SHOTS[SHOTS.length - 1];
@@ -63,7 +64,7 @@ function render(t, dbg) {
   const ly = LYRICS.find(L => t >= L.a && t < L.b);
   if (ly && !ly.hide) out += R.lyrics(t, ly);
   if (sh.chrome !== false) out += chrome(t, r);
-  if (dbg) out += debugTag(t, sh.id);
+  if (dbg) out += debugTag(t, sh.id, sh.chrome === false && sh.a > 200);   // end card: tag goes top left, clear of the laughing bot
   document.getElementById('root').innerHTML = out;
   return sh.id;
 }

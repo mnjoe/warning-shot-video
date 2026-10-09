@@ -25,14 +25,16 @@ function introDeck(t, I) {
   return `<g transform="${shake} translate(640 560) scale(${f(zoom)}) translate(-640 -560)">${s}${crew}${fx}</g>`;
 }
 
-// I-1: the PNN wheel spins in, the banner unfurls, then a parchment wipe on the big hit reveals the deck.
+// I-1: the logo sting. It opens in silence (the pre-roll): the wheel spins in slowly, the banner unfurls and a glint
+// passes; the music starts at 0; on the big hit at 1.95 the wheel kicks and a parchment wipe reveals the deck.
 function shotSting(t, lt, I) {
-  const [w0, w1] = I.wipe;
-  const spinIn = easeOut(prog(lt, 0, 0.9));
-  const spin = (1 - spinIn) * -320 + easeOut(prog(t, w0, w0 + 0.3)) * 45;
+  const [w0, w1] = I.wipe, start = -SONG.preroll;
+  const u = t - start;                                     // seconds since the video began
+  const spinIn = easeOut(prog(u, 0, 1.6));
+  const spin = (1 - spinIn) * -360 + Math.sin(u * 1.4) * 4 * spinIn + easeOut(prog(t, w0, w0 + 0.3)) * 45;
   const card = R.logoCard() + R.networkLogo({
-    x: 640, y: 300, s: lerp(0.15, 1, backOut(prog(lt, 0, 0.6))), spin,
-    banner: easeOut(prog(lt, 0.45, 0.95)), glint: prog(lt, 1.05, 1.5),
+    x: 640, y: 300, s: lerp(0.1, 1, backOut(prog(u, 0.1, 1.3))), spin,
+    banner: easeOut(prog(u, 1.3, 2.1)), glint: Math.max(prog(u, 2.2, 2.7), prog(t, 0.25, 0.75)),
   });
   if (t < w0) return { svg: card };
   const edge = lerp(-40, W + 60, ease(prog(t, w0, w1)));
@@ -63,7 +65,7 @@ function shotSailIn(t, lt, I) {
 function introShots(I) {
   const [i1, i3, i2, end] = I.cuts;
   return [
-    { id: 'I-1', a: i1, b: i3, fn: (t, lt) => shotSting(t, lt, I), chrome: false },
+    { id: 'I-1', a: i1 - SONG.preroll, b: i3, fn: (t, lt) => shotSting(t, lt, I), chrome: false },
     { id: 'I-3', a: i3, b: i2, fn: (t, lt) => shotCount(t, lt, I), chrome: false },
     { id: 'I-2', a: i2, b: end, fn: (t, lt) => shotSailIn(t, lt, I) },
   ];

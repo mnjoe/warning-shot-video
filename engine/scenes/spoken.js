@@ -44,6 +44,13 @@ function shotWhoToTell(t, lt, S) {
   s += R.officer({ x: 470, y: 660, s: 1.6, t, point: p, look: 3, frown: true });
   s += R.officer({ x: 810, y: 660, s: 1.6, t, phase: 0.5, point: p, flip: true, look: 3, frown: true });
   s += R.sfx(640, 300, backOut(prog(t, split + 0.4, split + 0.65)), '?!', 0, 96);
+  // The deadpan seagull answers the question.
+  const d = S.duh, k = backOut(prog(t, d - 0.25, d - 0.05));
+  if (k > 0) {
+    const gull = R.cabinWall(t) + R.seagull({ x: 140, y: 230, s: 1.15, t, talk: t > d && t < d + 0.6 });
+    s += R.pip({ x: 930, y: 170, w: 300, h: 220, inner: gull, k, id: 'duh' });
+    s += R.chatBubble(820, 250, backOut(prog(t, d, d + 0.2)), SONG.labels.duh);
+  }
   return { svg: s };
 }
 
