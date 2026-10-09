@@ -38,6 +38,16 @@ render.py               stills, contact sheets, video, audio mux
 | `scenes/` | No, unless the new style needs a different gag (a whole new world, not a reskin). |
 | `themes/` | Yes. This is where a new version lives. |
 
+## Themes so far
+
+| Theme | What it shows |
+|---|---|
+| `pirate-flat` | The original look. Defines every token and every rig. |
+| `newsprint` | Token-only override: palette, fonts, line weight, bot head shape. |
+| `lab-glove` | Rig override: replaces only `hand()` (lab-coat sleeve, ID badge, blue nitrile glove, jointed fingers). Everything else inherited. |
+
+Story words such as the hand's "US" label live in `SONG.labels` in `timeline.js`, not in a theme. Changing one changes it in every theme.
+
 ## Making a new theme
 
 **Palette, fonts, line weight, bot shape:** derive from an existing theme and override tokens only. `themes/newsprint/theme.js` is a complete example.
