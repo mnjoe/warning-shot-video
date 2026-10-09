@@ -66,7 +66,7 @@ function shotEndCard(t, lt, O, stinger) {
   let s = R.endCard({ k: prog(t, O.cuts[5], O.cuts[5] + 0.6), sources: SONG.sources });
   if (stinger) {
     const pop = backOut(prog(t, O.laugh - 0.2, O.laugh + 0.1));
-    s += R.pixelBot({ x: 1150, y: 690, s: 1.6 * pop, t, laugh: t > O.laugh }) + R.sfx(1000, 560, pop, copy('laugh'), -8, 44);
+    s += R.pixelBot({ x: 1205, y: 705, s: 1.25 * pop, t, laugh: t > O.laugh }) + R.sfx(1010, 690, pop, copy('laugh'), -6, 40);   // clear of the sources list
   }
   return { svg: s };
 }
