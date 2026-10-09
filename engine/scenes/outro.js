@@ -43,12 +43,14 @@ function shotLogs(t, lt, O) {
   return { svg: `<g transform="${shake}">${s}</g>` };
 }
 
-// O-3b: the WARNING SHOT cannon at night, smoke still curling from the barrel.
+// O-3b: the WARNING SHOT cannon at night, smoke still curling from the barrel. Then it fires again: confetti.
 function shotCannonNight(t, lt, O) {
   let s = R.nightSky(t, 470) + R.moon(1040, 150) + R.seaRect(t, 470, H, { fillKey: 'nightDeep' });
   s += R.dock(-40, 1320, 640, 30);
-  s += R.cannon({ x: 620, y: 520, s: 1.4, angle: -20, label: SONG.labels.cannon }) + R.dim(0.35);
-  for (let i = 0; i < 6; i++) { const p = ((lt * 0.35 + i / 6) % 1); s += R.smokePuff(620 + 200 + Math.sin(p * 6 + i) * 20 + p * 60, 380 - p * 260, 14 + p * 30, (1 - p) * 0.8); }
+  const fire = t >= O.encore ? t - O.encore : null, m = muzzle(620, 520, 1.4, -20);
+  s += R.cannon({ x: 620, y: 520, s: 1.4, angle: -20, label: SONG.labels.cannon, fire }) + R.dim(0.35);
+  if (fire == null) for (let i = 0; i < 6; i++) { const p = ((lt * 0.35 + i / 6) % 1); s += R.smokePuff(m.x + Math.sin(p * 6 + i) * 20 + p * 60, m.y - 20 - p * 260, 14 + p * 30, (1 - p) * 0.8); }
+  if (fire != null) s += R.confetti(m.x, m.y, fire);   // one more shot, confetti this time, bright against the night
   return { svg: s };
 }
 

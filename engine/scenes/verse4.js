@@ -1,3 +1,6 @@
+// Where a cannon placed at x,y (scale s, barrel angle in degrees) fires from: 150 units along the barrel from its pivot.
+function muzzle(x, y, s, angle) { const a = angle * Math.PI / 180; return { x: x + Math.cos(a) * 150 * s, y: y - 58 * s + Math.sin(a) * 150 * s }; }
+
 // Verse 4: the arcade. Less Skynet, more arcade: the bots were chasing scores. Draws through R.*.
 
 // V4-1: the headline version (a hulking war-bot of our own design) bursts into pixels and becomes a cute 8-bit bot.
@@ -42,7 +45,7 @@ function shotSurprise(t, lt, V) {
   let s = R.deck(t);
   for (let i = 0; i < 6; i++) s += R.bot({ x: 140 + i * 110, y: 640, s: 1.2, t, variant: i, phase: i * 0.2, sway: 6, sing: true, armsUp: fire != null ? 0.8 : 0 });
   s += R.cannon({ x: 1000, y: 540, s: 0.9, angle: -30, fire, label: SONG.labels.confettiCannon });
-  if (fire != null) s += R.confetti(1110, 420, fire);
+  if (fire != null) { const m = muzzle(1000, 540, 0.9, -30); s += R.confetti(m.x, m.y, fire); }
   return { svg: s };
 }
 

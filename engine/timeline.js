@@ -30,7 +30,8 @@ const SONG = {
     noInternet: 'NO INTERNET', artifactory: 'ARTIFACTORY', offlineMode: 'OFFLINE MODE:', off: 'OFF',
     internet: 'THE INTERNET', board: 'MESSAGE BOARD', hf: 'HUGGING FACE', serverLog: 'SERVER LOG',
     dates: ['MAY 12', 'LATE MAY', 'JUNE 27', 'JULY 4', 'JULY 5', 'JULY 8', 'JULY 16'],
-    firstNote: 'hi?', portSweep: 'PORT SWEEP ALERT', formerly: 'ARTIFACTORY (FORMERLY)', independence: 'INDEPENDENCE',
+    // firstNote: the first message-board note, as quoted in OpenAI's post (May 12).
+    firstNote: 'anyone found softtrace?', portSweep: 'PORT SWEEP ALERT', formerly: 'ARTIFACTORY (FORMERLY)', independence: 'INDEPENDENCE',
     rebuilt: 'REBUILT', sameDay: 'SAME DAY', chat: ['we’re back', 'hi again!'],
     // Spoken Word. The typed prompt is invented on purpose (the real one was never published); never use "complex attack paths".
     openaiQuote: ['“Dangerous actions', 'that no human', 'directed!”'],
@@ -134,7 +135,7 @@ const SONG = {
   },
   verse4: {
     cuts: [153.41, 156.92, 160.89, 164.91, 169.39],
-    lyr: { l1: 153.31, l1b: 155.00, l2: 156.71, l2b: 158.70, l3: 160.76, l4: 164.69, surprise: 166.32, end: 169.32 },
+    lyr: { l1: 153.31, l1b: 155.00, l2: 156.71, l2b: 158.70, l3: 160.76, l4: 164.69, surprise: 167.89, end: 169.32 },   // SURPRISE by Joe's ear (beat 336)
     morph: 155.90,              // EST: on "arcade"
   },
   verse5: {
@@ -148,9 +149,10 @@ const SONG = {
     thud: 190.35,
   },
   outro: {
-    cuts: [201.36, 202.87, 206.87, 210.86, 214.88, 219.80, 231.90, 238.82],   // O-1 O-2 O-3 O-3b O-4 O-5 O-6
+    cuts: [201.36, 202.87, 206.87, 210.86, 214.88, 223.84, 231.90, 238.82],   // O-1 O-2 O-3 O-3b O-4 O-5 O-6; O-5 by Joe's ear (beat 448)
     lyr: { l1: 203.03, shout1: 204.95, l2: 206.96, l3: 210.81, shout2: 212.83, l4: 215.01, end: 219.70 },   // shouts EST
     slam: 209.84, laugh: 232.0,
+    encore: 213.34,             // the cannon fires again, confetti this time (Joe, beat 427)
   },
   chorus: {
     // cuts: C-1..C-6 starts + end. fireAt: crowd shout. lyr: [l1, shout, l2, l3, l3b, l4, l5, l6, l6b, end]
