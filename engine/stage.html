@@ -8,6 +8,11 @@
 <script src="scenes/verse2.js"></script>
 <script src="scenes/verse3.js"></script>
 <script src="scenes/chorus.js"></script>
+<script src="scenes/spoken.js"></script>
+<script src="scenes/verse4.js"></script>
+<script src="scenes/verse5.js"></script>
+<script src="scenes/final.js"></script>
+<script src="scenes/outro.js"></script>
 <script>
 // Shot list in song order. Add sections here as they get built.
 const SHOTS = [
@@ -17,6 +22,11 @@ const SHOTS = [
   ...verse3Shots(SONG.verse3),
   ...chorusShots(SONG.chorus.one, false),
   ...chorusShots(SONG.chorus.two, true),
+  ...spokenShots(SONG.spoken),
+  ...verse4Shots(SONG.verse4),
+  ...verse5Shots(SONG.verse5),
+  ...finalShots(SONG.final),
+  ...outroShots(SONG.outro),
 ].sort((a, b) => a.a - b.a);
 const LYRICS = [
   ...introLyrics(SONG.intro),
@@ -25,6 +35,7 @@ const LYRICS = [
   ...verse3Lyrics(SONG.verse3.lyr),
   ...chorusLyrics(SONG.chorus.one.lyr),
   ...chorusLyrics(SONG.chorus.two.lyr),
+  ...laterLyrics(),
 ];
 // Network chrome comes on at I-2 and slides in; shots with chrome: false skip it.
 function chrome(t, r) {

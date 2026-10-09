@@ -24,6 +24,9 @@ registerTheme('pirate-flat', {
       shadow: '#1E2430', vignette: '#2B1A0A', fleck: '#3A2A18', liveText: '#FFFDF6',
       lyric: '#F3E9D2', lyricShout: '#C9A043', lyricOutline: '#122340',
       land: '#9DB38A', landDark: '#6E8B5A', windowLit: '#F6D77A',
+      gull: '#FBF8F0', gullWing: '#A9B4BE', parrot: '#4E9A4A', parrotDark: '#2F6B33', parrotRed: '#C8372D', parrotBlue: '#3F7CC0',
+      pixel: '#4FA3D9', pixelDark: '#2E6FA3', screen: '#141A22', amber: '#F2B84B', dog: '#C9A27A', dogDark: '#8C6A48',
+      blueprint: '#2C5A8C', blueprintLine: '#D7E6F5', asphalt: '#565B63', sun: '#F2C14E',
       skin: '#E9C6A0', night: '#16243F', nightDeep: '#0C1526', star: '#F6F0D8', cork: '#C89B62', string: '#C8241E', mouse: '#9A9188', mouseEar: '#E7B7A8',
     },
     // Bot color variants, cycled by index.
@@ -41,7 +44,7 @@ registerTheme('pirate-flat', {
     ticker: { speed: 95, size: 25 },
     // Sepia matrix for flashbacks (feColorMatrix values).
     flashback: '0.393 0.769 0.189 0 0  0.349 0.686 0.168 0 0  0.272 0.534 0.131 0 0  0 0 0 1 0',
-    copy: { clunk: 'CLUNK!', creak: 'CREAK...', clang: 'CLANG!', squeak: 'SQUEAK!', moreShout: 'SOME MORE!', network: 'PNN', networkFull: 'PIRATE NEWS NETWORK', liveFrom: 'LIVE FROM THE HIGH SEAS', masthead: 'The High Seas Herald', earlier: 'Earlier...', live: 'LIVE', replay: 'REPLAY' },
+    copy: { thud: 'THUD!', slam: 'SLAM!', mash: 'MASH! MASH!', poof: 'POOF!', laugh: 'HAR HAR HAR!', signOff: 'That’s the news from the high seas. This has been PNN.', sources: 'SOURCES', clunk: 'CLUNK!', creak: 'CREAK...', clang: 'CLANG!', squeak: 'SQUEAK!', moreShout: 'SOME MORE!', network: 'PNN', networkFull: 'PIRATE NEWS NETWORK', liveFrom: 'LIVE FROM THE HIGH SEAS', masthead: 'The High Seas Herald', earlier: 'Earlier...', live: 'LIVE', replay: 'REPLAY' },
   },
   rigs: {
     // ---- shared <defs>, rebuilt from tokens ----
@@ -738,7 +741,7 @@ registerTheme('pirate-flat', {
         ${txt(0, 12, o.text, size, col('live'), { font: TK.font.display })}</g>`;
     },
     // A ship's officer from the AI lab: tricorn hat, lab coat, nitrile gloves. Generic, not anyone real.
-    // o: x,y (feet),s,t,phase,flip,scratch (0..1 hand to head),spyglass (0..1 raised),point (0..1 arm out),shrug (0..1),look,frown
+    // o: x,y (feet),s,t,phase,flip,scratch (0..1 hand to head),spyglass (0..1 raised),point (0..1 arm out),shrug (0..1),look,frown,hat (false = bareheaded)
     officer(o) {
       const ink = col('ink'), t = o.t, ph = o.phase || 0, sc = o.scratch || 0, spy = o.spyglass || 0, pt = o.point || 0, sh = o.shrug || 0, look = o.look || 0;
       const blink = ((t + ph * 1.9) % 3.1) < 0.11;
@@ -767,7 +770,7 @@ registerTheme('pirate-flat', {
         <rect x="-20" y="-92" width="18" height="14" rx="2" fill="${col('badge')}" stroke="${ink}" stroke-width="1"/><rect x="-20" y="-92" width="18" height="4" fill="${col('badgeStrip')}"/>
         <circle cx="4" cy="-134" r="26" fill="${col('skin')}" stroke="${ink}" stroke-width="${lw('base')}"/>
         ${eyes}${mouth}
-        ${R.tricorn({ x: 4, y: -152, s: 1 })}
+        ${o.hat === false ? `<path d="M-20 -150 Q4 -170 28 -150" fill="none" stroke="${col('woodDark')}" stroke-width="${lw('limb')}" stroke-linecap="round"/>` : R.tricorn({ x: 4, y: -152, s: 1 })}
         ${front}${glass}`;
       const fl = o.flip ? -1 : 1;
       return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s * fl)} ${f(o.s)})">${body}</g>`;
@@ -879,7 +882,8 @@ registerTheme('pirate-flat', {
     stickyNote(x, y, k, text) {
       if (k <= 0) return '';
       const ink = col('ink');
-      return `<g transform="translate(${f(x)} ${f(y)}) rotate(-4) scale(${f(k)})"><rect x="-58" y="-34" width="116" height="84" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+      const w = Math.max(116, textWidth(text, 40, TK.font.hand) + 50);
+      return `<g transform="translate(${f(x)} ${f(y)}) rotate(-4) scale(${f(k)})"><rect x="${f(-w / 2)}" y="-34" width="${f(w)}" height="84" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
         ${txt(0, 22, text, 40, ink)}<circle cx="0" cy="-30" r="8" fill="${col('live')}" stroke="${ink}" stroke-width="${lw('base')}"/></g>`;
     },
     // Small chat bubble with a tail pointing down-left. k pop-in.
@@ -908,6 +912,314 @@ registerTheme('pirate-flat', {
         <path d="M30 -34 Q58 -30 62 -22 Q50 -10 30 -12 Z" fill="${col('mouse')}" stroke="${ink}" stroke-width="${lw('base')}" stroke-linejoin="round"/>
         <circle cx="62" cy="-22" r="4" fill="${ink}"/><circle cx="42" cy="-28" r="3.4" fill="${ink}"/>
         <path d="M58 -24 l14 -6 M58 -20 l15 2" stroke="${ink}" stroke-width="1.5"/></g>`;
+    },
+
+    // ---- spoken word: the PNN studio ----
+    lantern(x, y, lit, t) {
+      const ink = col('ink'), fl = lit ? 0.85 + 0.15 * Math.sin(t * 9 + x) : 0;
+      return `<line x1="${x}" y1="${y - 80}" x2="${x}" y2="${y - 34}" stroke="${ink}" stroke-width="${lw('base')}"/>
+        ${lit ? `<circle cx="${x}" cy="${y}" r="${f(60 * fl)}" fill="${col('windowLit')}" opacity="${f(0.28 * fl)}"/>` : ''}
+        <path d="M${x - 16} ${y - 34} h32 l6 10 v34 l-6 12 h-32 l-6 -12 v-34 z" fill="${lit ? col('windowLit') : col('iron')}" stroke="${ink}" stroke-width="${lw('base')}" stroke-linejoin="round"/>
+        <path d="M${x - 8} ${y - 24} v38 M${x + 8} ${y - 24} v38" stroke="${col('brassDark')}" stroke-width="${lw('thin')}"/>
+        <rect x="${x - 20}" y="${y - 40}" width="40" height="8" rx="3" fill="${col('brass')}" stroke="${ink}" stroke-width="${lw('thin')}"/>`;
+    },
+    // The captain's cabin dressed as a news studio: PNN wheel on a sail, lanterns.
+    studioSet(t) {
+      const ink = col('ink');
+      let s = R.cabinWall(t);
+      s += `<path d="M180 70 Q640 40 1100 70 L1060 470 Q640 440 220 470 Z" fill="${col('cream')}" stroke="${ink}" stroke-width="${lw('heavy')}" stroke-linejoin="round"/>
+        <path d="M260 120 Q640 96 1020 120" fill="none" stroke="${col('parchDark')}" stroke-width="${lw('base')}"/>`;
+      s += R.networkLogo({ x: 640, y: 250, s: 0.55, spin: Math.sin(t * 0.6) * 6, banner: 1 });
+      s += [150, 1130].map(x => R.lantern(x, 230, true, t)).join('');
+      return s;
+    },
+    newsDesk(o) {
+      const ink = col('ink');
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s || 1)})"><rect x="-470" y="0" width="940" height="44" rx="6" fill="${col('woodDark')}" stroke="${ink}" stroke-width="${lw('bold')}"/>
+        <rect x="-450" y="44" width="900" height="200" fill="${col('wood')}" stroke="${ink}" stroke-width="${lw('bold')}"/>
+        <rect x="-150" y="80" width="300" height="70" rx="6" fill="${col('live')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        ${txt(0, 133, copy('network'), 56, col('liveText'), { font: TK.font.display })}</g>`;
+    },
+    // Picture-in-picture box. inner is drawn in local coordinates (0..w, 0..h).
+    pip(o) {
+      const ink = col('ink'), k = o.k ?? 1;
+      if (k <= 0) return '';
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(k)})"><rect x="8" y="8" width="${o.w}" height="${o.h}" rx="8" fill="${col('shadow')}" opacity="0.35"/>
+        <clipPath id="pipclip${o.id || ''}"><rect width="${o.w}" height="${o.h}" rx="8"/></clipPath><g clip-path="url(#pipclip${o.id || ''})">${o.inner}</g>
+        <rect width="${o.w}" height="${o.h}" rx="8" fill="none" stroke="${ink}" stroke-width="${lw('bold')}"/><rect x="5" y="5" width="${o.w - 10}" height="${o.h - 10}" rx="5" fill="none" stroke="${col('brass')}" stroke-width="${lw('base')}"/></g>`;
+    },
+    // The deadpan seagull in reading glasses. o: x,y (feet),s,t,talk (bool),flip
+    seagull(o) {
+      const ink = col('ink'), t = o.t, open = o.talk ? Math.abs(Math.sin(t * 13)) * 7 : 0, blink = (t % 3.4) < 0.14;
+      const fl = o.flip ? -1 : 1;
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s * fl)} ${f(o.s)})">
+        <path d="M-8 -6 L-12 0 M8 -6 L4 0" stroke="${col('rust')}" stroke-width="${lw('heavy')}" stroke-linecap="round"/>
+        <path d="M-60 -60 Q-70 -20 -20 -10 L20 -10 Q40 -30 30 -70 Q0 -96 -60 -60 Z" fill="${col('gull')}" stroke="${ink}" stroke-width="${lw('heavy')}" stroke-linejoin="round"/>
+        <path d="M-60 -60 Q-30 -40 10 -50 Q-20 -24 -64 -38 Z" fill="${col('gullWing')}" stroke="${ink}" stroke-width="${lw('base')}" stroke-linejoin="round"/>
+        <path d="M-80 -58 L-60 -60 L-64 -44 Z" fill="${col('gullWing')}" stroke="${ink}" stroke-width="${lw('base')}" stroke-linejoin="round"/>
+        <circle cx="26" cy="-104" r="30" fill="${col('gull')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        <path d="M50 -104 L92 ${f(-100 - open * 0.3)} L56 -94 Z" fill="${col('brass')}" stroke="${ink}" stroke-width="${lw('base')}" stroke-linejoin="round"/>
+        <path d="M54 -94 L88 ${f(-92 + open)} L52 -88 Z" fill="${col('brassDark')}" stroke="${ink}" stroke-width="${lw('base')}" stroke-linejoin="round"/>
+        <circle cx="34" cy="-112" r="9" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('thin')}"/>
+        ${blink ? `<line x1="26" y1="-112" x2="42" y2="-112" stroke="${ink}" stroke-width="${lw('base')}"/>` : `<circle cx="37" cy="-110" r="3.4" fill="${ink}"/><path d="M25 -116 L43 -116" stroke="${ink}" stroke-width="${lw('heavy')}"/>`}
+        <circle cx="34" cy="-112" r="13" fill="none" stroke="${ink}" stroke-width="${lw('base')}"/><circle cx="62" cy="-110" r="10" fill="none" stroke="${ink}" stroke-width="${lw('base')}"/>
+        <line x1="47" y1="-112" x2="52" y2="-111" stroke="${ink}" stroke-width="${lw('base')}"/><line x1="21" y1="-114" x2="2" y2="-120" stroke="${ink}" stroke-width="${lw('base')}"/></g>`;
+    },
+    // A pundit parrot in a necktie. o: x,y (feet),s,t,variant,squawk (0..1),flap (0..1),flip
+    parrot(o) {
+      const ink = col('ink'), t = o.t, v = o.variant || 0, sq = o.squawk || 0, fl = o.flap || 0;
+      const body = [col('parrot'), col('parrotBlue'), col('parrotRed'), col('parrot')][v % 4], tie = [col('live'), col('brass'), col('navy'), col('rust')][v % 4];
+      const open = sq * (0.4 + 0.6 * Math.abs(Math.sin(t * 16))), bob = sq ? Math.sin(t * 16) * 3 : 0;
+      const wing = m => { const a = fl * (60 + 20 * Math.sin(t * 20)) * m; return `<g transform="rotate(${f(a)} ${m * 22} -70)"><path d="M${m * 22} -76 Q${m * 52} -40 ${m * 30} -14 Q${m * 16} -40 ${m * 22} -76 Z" fill="${col('parrotDark')}" stroke="${ink}" stroke-width="${lw('base')}" stroke-linejoin="round"/></g>`; };
+      const flip = o.flip ? -1 : 1;
+      return `<g transform="translate(${f(o.x)} ${f(o.y + bob)}) scale(${f(o.s * flip)} ${f(o.s)})">
+        <path d="M-10 -4 L-14 4 M10 -4 L6 4" stroke="${ink}" stroke-width="${lw('heavy')}" stroke-linecap="round"/>
+        <path d="M-8 -12 L-20 30 L4 30 Z" fill="${col('parrotRed')}" stroke="${ink}" stroke-width="${lw('base')}" stroke-linejoin="round"/>
+        ${wing(-1)}
+        <ellipse cx="0" cy="-54" rx="30" ry="46" fill="${body}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        <path d="M-6 -84 L6 -84 L10 -40 L0 -26 L-10 -40 Z" fill="${tie}" stroke="${ink}" stroke-width="${lw('thin')}" stroke-linejoin="round"/><path d="M-8 -86 L8 -86 L4 -78 L-4 -78 Z" fill="${tie}" stroke="${ink}" stroke-width="${lw('thin')}"/>
+        <path d="M-12 -92 L0 -84 L12 -92" fill="none" stroke="${col('paper')}" stroke-width="${lw('base')}"/>
+        ${wing(1)}
+        <circle cx="4" cy="-112" r="26" fill="${body}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        <circle cx="12" cy="-118" r="8" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('thin')}"/><circle cx="14" cy="-118" r="3.6" fill="${ink}"/>
+        <path d="M24 -118 Q44 -118 40 ${f(-98 - open * 3)} Q32 -104 24 -106 Z" fill="${col('cream')}" stroke="${ink}" stroke-width="${lw('base')}" stroke-linejoin="round"/>
+        <path d="M24 -102 Q32 ${f(-98 + open * 9)} 36 ${f(-96 + open * 10)}" fill="${col('cream')}" stroke="${ink}" stroke-width="${lw('base')}"/>
+        <path d="M-6 -136 Q4 -150 10 -136 Q16 -150 22 -134" fill="none" stroke="${body}" stroke-width="${lw('limb')}" stroke-linecap="round"/></g>`;
+    },
+    // Full-screen quote card. o: lines (array), k (pop)
+    quoteCard(o) {
+      const ink = col('ink'), k = o.k ?? 1, size = 66;
+      const body = o.lines.map((l, i) => txt(640, 300 + i * 84 - (o.lines.length - 1) * 42, l, fitSize(l, size, TK.font.display, 900), ink, { font: TK.font.display })).join('');
+      return `<g transform="translate(640 330) scale(${f(lerp(0.85, 1, easeOut(k)))}) translate(-640 -330)" opacity="${f(clamp(k * 2))}">
+        <rect x="120" y="110" width="1040" height="420" rx="16" fill="${col('parch')}" stroke="${ink}" stroke-width="${lw('bold')}"/>
+        <rect x="140" y="130" width="1000" height="380" rx="10" fill="none" stroke="${col('chyronRope')}" stroke-width="${lw('bold')}" stroke-dasharray="9 5"/>
+        ${txt(200, 250, '“', 180, col('rust'), { font: TK.font.display })}${txt(1080, 520, '”', 180, col('rust'), { font: TK.font.display })}
+        ${body}</g>`;
+    },
+    // Brass-framed terminal; shows the first `chars` characters of `lines`. o: x,y,s,lines,chars,t
+    terminal(o) {
+      const ink = col('ink'), n = Math.max(0, Math.floor(o.chars));
+      let used = 0, rows = '', lastX = 0, lastY = 0;
+      o.lines.forEach((ln, i) => {
+        const part = ln.slice(0, Math.max(0, n - used)); used += ln.length;
+        if (part.length || i === 0) { rows += txt(-370, -90 + i * 56, esc(part), 40, col('amber'), { anchor: 'start' }); lastX = -370 + textWidth(part, 40, TK.font.hand); lastY = -90 + i * 56; }
+      });
+      const cur = (o.t % 0.8) < 0.45 ? `<rect x="${f(lastX + 6)}" y="${lastY - 32}" width="18" height="38" fill="${col('amber')}"/>` : '';
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})"><rect x="-430" y="-190" width="860" height="380" rx="26" fill="${col('brass')}" stroke="${ink}" stroke-width="${lw('bold')}"/>
+        <rect x="-400" y="-160" width="800" height="320" rx="14" fill="${col('screen')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>${rows}${cur}
+        ${[-360, 360].map(x => `<circle cx="${x}" cy="172" r="6" fill="${col('brassDark')}"/>`).join('')}</g>`;
+    },
+    // Rubber stamp slammed onto something. k 0..1 (slam), rot degrees.
+    bigStamp(x, y, k, text, rot = -12, size = 90) {
+      if (k <= 0) return '';
+      const c = col('live'), w = textWidth(text, size, TK.font.display) + 60, sc = lerp(2.2, 1, easeOut(clamp(k))), a = clamp(k * 3);
+      return `<g transform="translate(${f(x)} ${f(y)}) rotate(${f(rot)}) scale(${f(sc)})" opacity="${f(a)}">
+        <rect x="${f(-w / 2)}" y="${-size * 0.75}" width="${f(w)}" height="${size * 1.25}" rx="10" fill="none" stroke="${c}" stroke-width="${lw('limb') + 2}"/>
+        ${txt(0, size * 0.3, text, size, c, { font: TK.font.display })}</g>`;
+    },
+    // Small dark tag in a corner. o: x,y (top left),lines
+    tagLabel(o) {
+      const ink = col('ink'), w = Math.max(...o.lines.map((l, i) => textWidth(l, i ? 20 : 26, i ? TK.font.hand : TK.font.display))) + 30;
+      return `<g transform="translate(${f(o.x)} ${f(o.y)})"><rect width="${f(w)}" height="${18 + o.lines.length * 26}" rx="6" fill="${col('navyDeep')}" stroke="${ink}" stroke-width="${lw('base')}"/>
+        ${o.lines.map((l, i) => txt(15, 34 + i * 26, l, i ? 20 : 26, col('cream'), { anchor: 'start', font: i ? TK.font.hand : TK.font.display })).join('')}</g>`;
+    },
+    // Marquee sign with chasing bulbs. o: x,y,s,text,t
+    marquee(o) {
+      const ink = col('ink'), size = 64, w = textWidth(o.text, size, TK.font.display) + 120, h = 130;
+      let bulbs = '';
+      const n = Math.floor((w + h) * 2 / 46), step = Math.floor(o.t * 8);
+      for (let i = 0; i < n; i++) {
+        let d = i * 46, x, y; const P = w * 2 + h * 2;
+        d = d % P;
+        if (d < w) { x = -w / 2 + d; y = -h / 2; } else if (d < w + h) { x = w / 2; y = -h / 2 + d - w; } else if (d < 2 * w + h) { x = w / 2 - (d - w - h); y = h / 2; } else { x = -w / 2; y = h / 2 - (d - 2 * w - h); }
+        const on = (i + step) % 3 !== 0;
+        bulbs += `<circle cx="${f(x)}" cy="${f(y)}" r="9" fill="${on ? col('windowLit') : col('brassDark')}" stroke="${ink}" stroke-width="${lw('thin')}"/>`;
+      }
+      const flash = (o.t % 0.6) < 0.4;
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})"><rect x="${f(-w / 2 + 8)}" y="${-h / 2 + 8}" width="${f(w)}" height="${h}" rx="12" fill="${col('shadow')}" opacity="0.35"/>
+        <rect x="${f(-w / 2)}" y="${-h / 2}" width="${f(w)}" height="${h}" rx="12" fill="${flash ? col('live') : col('rust')}" stroke="${ink}" stroke-width="${lw('bold')}"/>
+        ${txt(0, 22, o.text, size, col('liveText'), { font: TK.font.display, stroke: ink, sw: lw('base') })}${bulbs}
+        <line x1="${f(-w / 4)}" y1="${-h / 2}" x2="${f(-w / 4)}" y2="-400" stroke="${ink}" stroke-width="${lw('heavy')}"/><line x1="${f(w / 4)}" y1="${-h / 2}" x2="${f(w / 4)}" y2="-400" stroke="${ink}" stroke-width="${lw('heavy')}"/></g>`;
+    },
+
+    // ---- verse 4: the arcade ----
+    // A hulking chrome war-bot of our own design (not any film's). o: x,y (feet),s,t
+    warBot(o) {
+      const ink = col('ink'), t = o.t, scan = Math.sin(t * 3) * 18;
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})">
+        <rect x="-120" y="-60" width="240" height="60" rx="30" fill="${col('iron')}" stroke="${ink}" stroke-width="${lw('bold')}"/>
+        ${[-80, -27, 27, 80].map(x => `<circle cx="${x}" cy="-30" r="20" fill="${col('ironHi')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>`).join('')}
+        <path d="M-90 -60 L-110 -250 L110 -250 L90 -60 Z" fill="${col('metal')}" stroke="${ink}" stroke-width="${lw('bold')}" stroke-linejoin="round"/>
+        <path d="M-60 -230 L-40 -80" stroke="${col('paper')}" stroke-width="10" opacity="0.6" stroke-linecap="round"/>
+        <rect x="-50" y="-200" width="100" height="70" rx="8" fill="${col('metalDark')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        <circle cx="0" cy="-165" r="18" fill="${col('live')}" stroke="${ink}" stroke-width="${lw('base')}"/>
+        ${[-1, 1].map(m => `<circle cx="${m * 130}" cy="-232" r="40" fill="${col('metalDark')}" stroke="${ink}" stroke-width="${lw('bold')}"/>
+          <path d="M${m * 140} -210 L${m * 170} -120 L${m * 150} -60" fill="none" stroke="${ink}" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M${m * 140} -210 L${m * 170} -120 L${m * 150} -60" fill="none" stroke="${col('metal')}" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M${m * 150} -60 l${m * -18} 30 M${m * 150} -60 l${m * 18} 30" stroke="${ink}" stroke-width="${lw('limb')}" stroke-linecap="round"/>`).join('')}
+        <rect x="-70" y="-340" width="140" height="96" rx="20" fill="${col('metal')}" stroke="${ink}" stroke-width="${lw('bold')}"/>
+        <rect x="-56" y="-312" width="112" height="28" rx="12" fill="${col('screen')}" stroke="${ink}" stroke-width="${lw('base')}"/>
+        <rect x="${f(-20 + scan)}" y="-306" width="40" height="16" rx="6" fill="${col('live')}"/>
+        <line x1="0" y1="-340" x2="0" y2="-380" stroke="${ink}" stroke-width="${lw('heavy')}"/><circle cx="0" cy="-386" r="8" fill="${col('live')}" stroke="${ink}" stroke-width="${lw('base')}"/></g>`;
+    },
+    // Cute 8-bit arcade bot, drawn as pixels. o: x,y (feet),s,t,laugh (bool)
+    pixelBot(o) {
+      const grid = ['....AA....', '....AA....', '.BBBBBBBB.', '.BWWBBWWB.', '.BWKBBWKB.', '.BBBBBBBB.', '.BBMMMMBB.', '..BBBBBB..', 'BB.BBBB.BB', 'B..BBBB..B', '...B..B...', '..BB..BB..'];
+      const laughOpen = o.laugh && (o.t % 0.3) < 0.15;
+      const c = { A: col('amber'), B: col('pixel'), W: col('paper'), K: col('ink'), M: laughOpen ? col('mouth') : col('pixelDark') };
+      let s = '';
+      grid.forEach((row, y) => [...row].forEach((ch, x) => { if (c[ch]) s += `<rect x="${x * 10 - 50}" y="${y * 10 - 120}" width="10.5" height="10.5" fill="${c[ch]}"/>`; }));
+      const bounce = o.laugh ? -Math.abs(Math.sin(o.t * 10)) * 8 : Math.round(Math.sin(o.t * 4)) * 4;
+      return `<g transform="translate(${f(o.x)} ${f(o.y + bounce)}) scale(${f(o.s)})" shape-rendering="crispEdges">${s}</g>`;
+    },
+    // Burst of square pixels. p 0..1
+    pixelBurst(x, y, p, s = 1) {
+      if (p <= 0 || p >= 1) return '';
+      const cs = ['metal', 'pixel', 'metalDark', 'pixelDark', 'live', 'amber'];
+      let out = '';
+      for (let i = 0; i < 40; i++) { const a = rnd(i) * Math.PI * 2, r = (40 + rnd(i + 3) * 260) * easeOut(p) * s, sz = (8 + rnd(i + 7) * 14) * s * (1 - p * 0.6);
+        out += `<rect x="${f(x + Math.cos(a) * r - sz / 2)}" y="${f(y + Math.sin(a) * r - sz / 2 - 150 * s)}" width="${f(sz)}" height="${f(sz)}" fill="${col(cs[i % cs.length])}" opacity="${f(1 - easeIn(p))}"/>`; }
+      return out;
+    },
+    // Arcade cabinet, screen facing us. o: x,y (floor),s,t,title,level,sub,score,press (0..1 buttons)
+    arcadeCabinet(o) {
+      const ink = col('ink'), t = o.t, blink = (t % 0.6) < 0.4, pr = o.press || 0;
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})">
+        <path d="M-200 0 L-200 -520 L-170 -560 L170 -560 L200 -520 L200 0 Z" fill="${col('navy')}" stroke="${ink}" stroke-width="${lw('bold')}" stroke-linejoin="round"/>
+        <path d="M-200 -300 L-150 -300 M150 -300 L200 -300" stroke="${col('live')}" stroke-width="${lw('limb')}"/>
+        <rect x="-160" y="-550" width="320" height="70" rx="6" fill="${col('live')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        ${txt(0, -500, o.title || '', fitSize(o.title || '', 46, TK.font.display, 290), col('liveText'), { font: TK.font.display })}
+        <rect x="-170" y="-470" width="340" height="250" rx="10" fill="${col('ink')}"/>
+        <rect x="-155" y="-455" width="310" height="220" rx="6" fill="${col('screen')}" stroke="${col('pixelDark')}" stroke-width="${lw('base')}"/>
+        ${txt(0, -390, o.level || '', fitSize(o.level || '', 40, TK.font.display, 280), col('amber'), { font: TK.font.display })}
+        ${blink ? txt(0, -340, o.sub || '', 26, col('pixel'), {}) : ''}
+        ${txt(0, -268, o.score || '', 26, col('paper'), {})}
+        <path d="M-210 -220 L210 -220 L240 -150 L-240 -150 Z" fill="${col('navyDeep')}" stroke="${ink}" stroke-width="${lw('bold')}" stroke-linejoin="round"/>
+        <line x1="-120" y1="-185" x2="${f(-120 + Math.sin(t * 30) * 14 * pr)}" y2="-240" stroke="${ink}" stroke-width="${lw('limb')}" stroke-linecap="round"/><circle cx="${f(-120 + Math.sin(t * 30) * 14 * pr)}" cy="-244" r="14" fill="${col('live')}" stroke="${ink}" stroke-width="${lw('base')}"/>
+        ${[30, 90, 150].map((x, i) => { const down = pr * (Math.sin(t * 40 + i * 2) > 0 ? 1 : 0); return `<ellipse cx="${x}" cy="${f(-186 + down * 4)}" rx="22" ry="${f(12 - down * 4)}" fill="${[col('live'), col('brass'), col('pixel')][i]}" stroke="${ink}" stroke-width="${lw('base')}"/>`; }).join('')}
+        <rect x="-60" y="-110" width="120" height="44" rx="6" fill="${col('ink')}"/><rect x="-14" y="-100" width="28" height="24" fill="${col('amber')}"/></g>`;
+    },
+    // A round lagoon with a sand rim. o: x,y,rx,ry,t
+    lagoon(o) {
+      const ink = col('ink');
+      let s = `<ellipse cx="${o.x}" cy="${o.y}" rx="${o.rx + 30}" ry="${o.ry + 24}" fill="${col('parchDark')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        <ellipse cx="${o.x}" cy="${o.y}" rx="${o.rx}" ry="${o.ry}" fill="${col('sea')}" stroke="${ink}" stroke-width="${lw('base')}"/>`;
+      for (let i = 0; i < 5; i++) { const r = 0.3 + i * 0.15; s += `<ellipse cx="${o.x}" cy="${o.y}" rx="${f(o.rx * r)}" ry="${f(o.ry * r)}" fill="none" stroke="${col('seaLine')}" stroke-width="${lw('fine')}" stroke-dasharray="20 18" stroke-dashoffset="${f(o.t * 30 * (i % 2 ? 1 : -1))}"/>`; }
+      return s;
+    },
+    // A generic little toy boat (not any game's art). o: x,y,s,rot
+    toyBoat(o) {
+      const ink = col('ink');
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) rotate(${f(o.rot || 0)}) scale(${f(o.s)})"><path d="M-40 -10 L40 -10 L28 12 L-30 12 Z" fill="${col('rust')}" stroke="${ink}" stroke-width="${lw('heavy')}" stroke-linejoin="round"/>
+        <line x1="0" y1="-10" x2="0" y2="-62" stroke="${ink}" stroke-width="${lw('heavy')}"/><path d="M2 -60 L34 -18 L2 -18 Z" fill="${col('cream')}" stroke="${ink}" stroke-width="${lw('base')}" stroke-linejoin="round"/></g>`;
+    },
+    coin(x, y, p, s = 1) {
+      const sx = Math.abs(Math.cos(p * 6)) * 0.8 + 0.2;
+      return `<g transform="translate(${f(x)} ${f(y)}) scale(${f(sx * s)} ${f(s)})"><circle r="16" fill="${col('brass')}" stroke="${col('ink')}" stroke-width="${lw('base')}"/><circle r="9" fill="none" stroke="${col('brassDark')}" stroke-width="${lw('thin')}"/></g>`;
+    },
+    // Confetti shower from x,y. p is seconds since it fired.
+    confetti(x, y, p) {
+      if (p <= 0 || p > 3) return '';
+      const cs = ['live', 'brass', 'pixel', 'cream', 'parrot', 'rust'];
+      let out = '';
+      for (let i = 0; i < 90; i++) {
+        const a = -Math.PI / 2 + (rnd(i) - 0.5) * 2.2, v = 500 + rnd(i + 2) * 700, vx = Math.cos(a) * v, vy = Math.sin(a) * v;
+        const px = x + vx * p * 0.6 + Math.sin(p * 6 + i) * 20, py = y + vy * p * 0.6 + 420 * p * p;
+        out += `<rect x="${f(px)}" y="${f(py)}" width="12" height="7" fill="${col(cs[i % cs.length])}" transform="rotate(${f(p * 400 + i * 37)} ${f(px + 6)} ${f(py + 3)})" opacity="${f(clamp(3 - p))}"/>`;
+      }
+      return out;
+    },
+
+    // ---- verse 5: the verdict ----
+    // A dog with a weedwhacker strapped to its back, the spinning head out in front. o: x,y (feet),s,t,run
+    dog(o) {
+      const ink = col('ink'), t = o.t, r = o.run ?? t * 3, leg = a => Math.sin(r * Math.PI * 2 + a) * 22, bob = -Math.abs(Math.sin(r * Math.PI * 2)) * 6;
+      const L = (x, a) => `<line x1="${x}" y1="-40" x2="${f(x + leg(a))}" y2="0" stroke="${ink}" stroke-width="14" stroke-linecap="round"/><line x1="${x}" y1="-40" x2="${f(x + leg(a))}" y2="0" stroke="${col('dog')}" stroke-width="8" stroke-linecap="round"/>`;
+      const spin = t * 2000;
+      return `<g transform="translate(${f(o.x)} ${f(o.y + bob)}) scale(${f(o.s)})">
+        ${L(-50, 0)}${L(40, Math.PI)}
+        <path d="M-80 -60 Q-110 -90 -100 -110" fill="none" stroke="${ink}" stroke-width="${lw('limb')}" stroke-linecap="round"/>
+        <ellipse cx="-10" cy="-62" rx="80" ry="34" fill="${col('dog')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        ${L(-30, Math.PI)}${L(60, 0)}
+        <circle cx="86" cy="-92" r="34" fill="${col('dog')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        <path d="M70 -122 L58 -150 L86 -126 Z" fill="${col('dogDark')}" stroke="${ink}" stroke-width="${lw('base')}" stroke-linejoin="round"/>
+        <ellipse cx="120" cy="-84" rx="20" ry="14" fill="${col('dog')}" stroke="${ink}" stroke-width="${lw('base')}"/><circle cx="136" cy="-88" r="6" fill="${ink}"/>
+        <circle cx="96" cy="-100" r="5" fill="${ink}"/><path d="M110 -72 Q120 -60 132 -70" fill="${col('mouth')}" stroke="${ink}" stroke-width="${lw('thin')}"/>
+        <rect x="-60" y="-104" width="80" height="22" rx="6" fill="${col('rust')}" stroke="${ink}" stroke-width="${lw('base')}"/><line x1="-20" y1="-82" x2="-20" y2="-30" stroke="${col('rust')}" stroke-width="${lw('heavy')}"/>
+        <rect x="-74" y="-128" width="40" height="30" rx="6" fill="${col('live')}" stroke="${ink}" stroke-width="${lw('base')}"/>
+        <line x1="-40" y1="-110" x2="210" y2="-6" stroke="${ink}" stroke-width="14" stroke-linecap="round"/><line x1="-40" y1="-110" x2="210" y2="-6" stroke="${col('metal')}" stroke-width="7" stroke-linecap="round"/>
+        <g transform="translate(214 -4)"><ellipse rx="34" ry="8" fill="none" stroke="${col('ink')}" stroke-width="${lw('fine')}" stroke-dasharray="6 6" stroke-dashoffset="${f(spin % 12)}"/>
+          <circle r="12" fill="${col('live')}" stroke="${ink}" stroke-width="${lw('base')}"/></g></g>`;
+    },
+    // Shredded rope bits flying from x,y. p seconds since the cut.
+    ropeBits(x, y, p) {
+      if (p <= 0 || p > 1.5) return '';
+      let out = '';
+      for (let i = 0; i < 14; i++) { const a = -Math.PI / 2 + (rnd(i + 30) - 0.5) * 2.4, v = 220 + rnd(i) * 300, px = x + Math.cos(a) * v * p, py = y + Math.sin(a) * v * p + 600 * p * p;
+        out += `<line x1="${f(px)}" y1="${f(py)}" x2="${f(px + 18)}" y2="${f(py + 4)}" stroke="${col('rope')}" stroke-width="${lw('heavy')}" stroke-linecap="round" transform="rotate(${f(p * 500 + i * 40)} ${f(px + 9)} ${f(py + 2)})" opacity="${f(clamp(1.5 - p))}"/>`; }
+      return out;
+    },
+    // The ship's blueprint. o: x,y (center),s,title,shipLabel
+    blueprint(o) {
+      const L = col('blueprintLine'), ink = col('ink');
+      let grid = '';
+      for (let x = -460; x <= 460; x += 40) grid += `<line x1="${x}" y1="-260" x2="${x}" y2="260" stroke="${L}" stroke-width="1" opacity="0.25"/>`;
+      for (let y = -260; y <= 260; y += 40) grid += `<line x1="-460" y1="${y}" x2="460" y2="${y}" stroke="${L}" stroke-width="1" opacity="0.25"/>`;
+      const line = d => `<path d="${d}" fill="none" stroke="${L}" stroke-width="${lw('base')}" stroke-linejoin="round"/>`;
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})"><rect x="-470" y="-270" width="940" height="540" fill="${col('blueprint')}" stroke="${ink}" stroke-width="${lw('bold')}"/>${grid}
+        ${txt(-440, -224, o.title || '', 32, L, { anchor: 'start', font: TK.font.display })}
+        <g transform="translate(0 120) scale(0.75)">${line('M-300 -150 L-205 -150 L-195 -112 L215 -112 Q262 -116 300 -150 L312 -146 Q300 -70 250 -6 Q238 10 215 14 L-245 14 Q-280 -40 -300 -150 Z')}
+        ${line('M-70 -112 L-70 -560 M150 -112 L150 -470')}${line('M-175 -440 L35 -440 L30 -235 L-170 -235 Z')}${line('M55 -392 L245 -392 L240 -215 L60 -215 Z')}${line('M156 -455 L392 -205 L176 -205 Z')}
+        ${line('M-300 40 L312 40 M-300 30 L-300 50 M312 30 L312 50')}${txt(6, 30, o.shipLabel || '', 46, L, { font: TK.font.hand })}</g>
+        ${line('M300 -230 L440 -230 L440 -150 L300 -150 Z')}${txt(370, -184, 'REV. 1', 26, L, {})}</g>`;
+    },
+
+    // ---- final chorus ----
+    sunburst(x, y, t, k) {
+      if (k <= 0) return '';
+      let rays = '';
+      for (let i = 0; i < 16; i++) { const a = i * Math.PI / 8 + t * 0.3; rays += `<path d="M${f(x + Math.cos(a - 0.08) * 90)} ${f(y + Math.sin(a - 0.08) * 90)} L${f(x + Math.cos(a) * (240 + 30 * Math.sin(t * 3 + i)) * k)} ${f(y + Math.sin(a) * (240 + 30 * Math.sin(t * 3 + i)) * k)} L${f(x + Math.cos(a + 0.08) * 90)} ${f(y + Math.sin(a + 0.08) * 90)} Z" fill="${col('sun')}" opacity="${f(0.55 * k)}"/>`; }
+      return rays + `<circle cx="${x}" cy="${y}" r="${f(80 * k)}" fill="${col('sun')}" stroke="${col('brassDark')}" stroke-width="${lw('heavy')}"/>`;
+    },
+
+    // ---- outro ----
+    // Treasure chest. o: x,y (floor),s,label,open (0 shut .. 1 open)
+    chest(o) {
+      const ink = col('ink'), a = lerp(0, -110, clamp(o.open ?? 0));
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})">
+        <rect x="-150" y="-150" width="300" height="150" rx="10" fill="${col('wood')}" stroke="${ink}" stroke-width="${lw('bold')}"/>
+        ${[-100, 100].map(x => `<rect x="${x - 10}" y="-150" width="20" height="150" fill="${col('brass')}" stroke="${ink}" stroke-width="${lw('base')}"/>`).join('')}
+        <rect x="-70" y="-110" width="140" height="44" rx="5" fill="${col('parch')}" stroke="${ink}" stroke-width="${lw('base')}"/>${txt(0, -78, o.label || '', fitSize(o.label || '', 34, TK.font.display, 120), ink, { font: TK.font.display })}
+        <g transform="rotate(${f(a)} -150 -150)"><path d="M-156 -150 L-156 -200 Q0 -260 156 -200 L156 -150 Z" fill="${col('woodDark')}" stroke="${ink}" stroke-width="${lw('bold')}" stroke-linejoin="round"/>
+        <rect x="-16" y="-170" width="32" height="34" rx="4" fill="${col('brass')}" stroke="${ink}" stroke-width="${lw('base')}"/></g></g>`;
+    },
+    nameTag(x, y, text) {
+      const ink = col('ink'), w = textWidth(text, 28, TK.font.display) + 30;
+      return `<line x1="${x}" y1="${y + 16}" x2="${x}" y2="${y + 40}" stroke="${ink}" stroke-width="${lw('base')}"/><rect x="${f(x - w / 2)}" y="${y - 20}" width="${f(w)}" height="38" rx="5" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>${txt(x, y + 9, text, 28, ink, { font: TK.font.display })}`;
+    },
+    // Asphalt lot with painted stall lines (full frame below y0).
+    parkingLot(y0) {
+      let s = `<rect x="0" y="${y0}" width="${W}" height="${H - y0}" fill="${col('asphalt')}"/>`;
+      for (let x = -200; x < W + 200; x += 300) s += `<line x1="${x}" y1="${H}" x2="${x + 120}" y2="${y0}" stroke="${col('cream')}" stroke-width="10"/>`;
+      return s;
+    },
+    parkingMeter(o) {
+      const ink = col('ink');
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})"><rect x="-8" y="-170" width="16" height="170" fill="${col('metalDark')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        <path d="M-40 -170 L-40 -250 Q0 -290 40 -250 L40 -170 Z" fill="${col('metal')}" stroke="${ink}" stroke-width="${lw('bold')}" stroke-linejoin="round"/>
+        <rect x="-26" y="-250" width="52" height="40" rx="6" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('base')}"/>
+        <rect x="-22" y="-246" width="20" height="32" fill="${col('live')}"/>${txt(10, -222, '0:00', 16, ink, {})}</g>`;
+    },
+    // Closing card: logo, sign-off line, and the sources. o: k (fade in),sources [[name, where]]
+    endCard(o) {
+      const ink = col('ink'), k = clamp(o.k ?? 1);
+      const half = Math.ceil(o.sources.length / 2);
+      const rows = o.sources.map(([who, where], i) => { const c = i < half ? 0 : 1, r = i % half, x = c ? 660 : 110, y = 360 + r * 52;
+        return txt(x, y, who, 26, ink, { anchor: 'start', font: TK.font.display }) + txt(x, y + 22, where, 19, col('chyronSub'), { anchor: 'start' }); }).join('');
+      return `<g opacity="${f(k)}">${R.logoCard()}${R.networkLogo({ x: 640, y: 150, s: 0.42, spin: 0, banner: 0 })}
+        ${txt(640, 270, copy('signOff'), fitSize(copy('signOff'), 34, TK.font.hand, 1000), ink, {})}
+        <line x1="110" y1="296" x2="1170" y2="296" stroke="${col('chyronRope')}" stroke-width="${lw('base')}"/>
+        ${txt(110, 326, copy('sources'), 26, col('rust'), { anchor: 'start', font: TK.font.display })}${rows}</g>`;
     },
 
     // ---- network chrome ----

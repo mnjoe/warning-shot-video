@@ -81,7 +81,7 @@ Check a theme with `--stills` before rendering video. Label boxes size to their 
 - `lyrics`: `size, shoutSize, stroke, shoutStroke, y, lineGap`.
 - `ticker`: `speed, size`.
 - `flashback`: feColorMatrix values for flashbacks (sepia by default).
-- `copy`: theme flavor text: `clunk, creak, clang, squeak, moreShout, network, networkFull, liveFrom, masthead, earlier, live, replay`. Scenes read it with `copy(k)`. Story text lives in `SONG.labels` and `SONG.headlines`, not here.
+- `copy`: theme flavor text: `thud, slam, mash, poof, laugh, signOff, sources, clunk, creak, clang, squeak, moreShout, network, networkFull, liveFrom, masthead, earlier, live, replay`. Scenes read it with `copy(k)`. Story text lives in `SONG.labels` and `SONG.headlines`, not here.
 
 ## Theme contract (rigs every theme must provide)
 
@@ -145,6 +145,22 @@ Inherited from `pirate-flat` unless overridden. `t` is song time in seconds, `lt
 | `corkboard(o)` | pins and tangled red string: `x, y, s, wipe (0 to 1)` |
 | `chatBubble(x, y, k, text)`, `sparkle(x, y, p, s)`, `divider(x)` | small bubbles, shine, split-screen line |
 | `mouse(o)` | `x, y, s, t, run, flip` |
+| `lantern(x, y, lit, t)`, `studioSet(t)`, `newsDesk(o)`, `pip(o)` | the PNN studio and picture-in-picture box |
+| `seagull(o)` | deadpan seagull in reading glasses: `x, y, s, t, talk, flip` |
+| `parrot(o)` | pundit parrot in a necktie: `x, y, s, t, variant, squawk, flap, flip` |
+| `quoteCard(o)`, `terminal(o)`, `bigStamp(x, y, k, text, rot, size)`, `tagLabel(o)` | quote card, prompt terminal (`lines, chars`), rubber stamp, corner tag |
+| `marquee(o)` | blinking bulb sign: `x, y, s, text, t` |
+| `warBot(o)`, `pixelBot(o)`, `pixelBurst(x, y, p, s)` | the headline war-bot (our own design), the 8-bit bot (`laugh`), the pixel burst |
+| `arcadeCabinet(o)` | `x, y, s, t, title, level, sub, score, press` |
+| `lagoon(o)`, `toyBoat(o)`, `coin(x, y, p, s)`, `confetti(x, y, p)` | the generic coin-loop lagoon (not any game's art) and confetti |
+| `dog(o)`, `ropeBits(x, y, p)` | the dog with the weedwhacker, shredded rope |
+| `blueprint(o)` | ship blueprint: `x, y, s, title, shipLabel` |
+| `sunburst(x, y, t, k)` | final-chorus sun |
+| `chest(o)`, `nameTag(x, y, text)` | the LOGS chest (`open`), name tags |
+| `parkingLot(y0)`, `parkingMeter(o)` | the parking lot |
+| `endCard(o)` | sign-off and sources: `k, sources` |
+
+`officer(o)` also takes `hat: false` (bareheaded figures such as the METR and REDWOOD reviewers).
 
 Shots may set `trans: 'page'`: for the first 0.4 s the previous shot stays left of a turning page (Verse 3).
 `seaRect` takes `fillKey` (a color token name) for night water.

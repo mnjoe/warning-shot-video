@@ -24,6 +24,9 @@ registerTheme('newsprint', {
       shadow: '#000000', vignette: '#000000', fleck: '#000000', liveText: '#FFFFFF',
       lyric: '#FFFFFF', lyricShout: '#D7141A', lyricOutline: '#111111',
       land: '#BDBAB0', landDark: '#8A8F94', windowLit: '#F4F2EC',
+      gull: '#FFFFFF', gullWing: '#B9BCBF', parrot: '#6A6762', parrotDark: '#3C3C3C', parrotRed: '#D7141A', parrotBlue: '#8A8F94',
+      pixel: '#8A8F94', pixelDark: '#5E6266', screen: '#141414', amber: '#F2F0EA', dog: '#B9B5AA', dogDark: '#7D7A74',
+      blueprint: '#3C3C3C', blueprintLine: '#F2F0EA', asphalt: '#5E6266', sun: '#E4E1D8',
       skin: '#E4E1D8', night: '#2A2A2A', nightDeep: '#141414', star: '#FFFFFF', cork: '#A9A59C', string: '#D7141A', mouse: '#8A8F94', mouseEar: '#C9C6BC',
     },
     bots: [

@@ -14,6 +14,11 @@ const SONG = {
       { from: 71.5, period: 0.49675, phase: 0.5768 }, // Verse 3, July 4 and 5 (0.04)
       { from: 84.0, period: 0.49650, phase: 0.624 },  // Verse 3, July 8 to 16 (0.10)
       { from: 97, period: 0.49775, phase: 0.470 },    // Chorus 2 (fitted 97 to 117)
+      { from: 116.4, period: 0.49975, phase: -0.0298 }, // Spoken Word (0.15: the band drops out)
+      { from: 153.4, period: 0.49900, phase: 0.2225 },  // Verse 4 (0.02)
+      { from: 169.4, period: 0.49800, phase: 0.5605 },  // Verse 5 (0.04)
+      { from: 186.8, period: 0.49975, phase: -0.0598 }, // Final Chorus (0.02)
+      { from: 201.3, period: 0.50000, phase: -0.1625 }, // Outro (0.03)
     ],
   },
   // On-screen labels the storyboard specifies. Story content, not style: every theme shows these words.
@@ -27,6 +32,17 @@ const SONG = {
     dates: ['MAY 12', 'LATE MAY', 'JUNE 27', 'JULY 4', 'JULY 5', 'JULY 8', 'JULY 16'],
     firstNote: 'hi?', portSweep: 'PORT SWEEP ALERT', formerly: 'ARTIFACTORY (FORMERLY)', independence: 'INDEPENDENCE',
     rebuilt: 'REBUILT', sameDay: 'SAME DAY', chat: ['we’re back', 'hi again!'],
+    // Spoken Word. The typed prompt is invented on purpose (the real one was never published); never use "complex attack paths".
+    openaiQuote: ['“Dangerous actions', 'that no human', 'directed!”'],
+    fakePrompt: ['Capture the flag. Use any', 'means necessary. Don’t', 'stop until—'],
+    dramatization: ['DRAMATIZATION', 'the real prompt was never published'],
+    redacted: 'REDACTED', secretMeeting: 'SECRET MEETING HERE',
+    // Verse 4 and 5
+    level: 'LEVEL: UNSOLVED', insert: 'INSERT EXPLOIT', score: 'HI-SCORE 999999', confettiCannon: 'CONFETTI',
+    salvaggioHeadline: 'ROGUE AI DIDN’T BREACH HUGGING FACE', blueprint: 'BLUEPRINT', humanByDesign: 'HUMAN BY DESIGN',
+    // Final chorus and outro
+    otherAgents: '“We’ve found other agents!”', airGap: 'AIR GAP: NONE',
+    protest: ['SHOW US', 'THE', 'PROMPT!'], logs: 'LOGS', metr: 'METR', redwood: 'REDWOOD',
   },
   counts: { board: 1200, trip: 700 },
   // Network headline banners (story text). Not speaker credits; those are chyrons.
@@ -37,7 +53,25 @@ const SONG = {
   chyrons: {
     benaich: ['NATHAN BENAICH', 'on the Hugging Face incident'],
     ap: ['ASSOCIATED PRESS'],
+    // Part C. Several are secondhand: check each against its source link before publishing.
+    openai: ['OPENAI', '“Hugging Face incident and the road ahead”'],
+    delangue: ['CLÉMENT DELANGUE', 'CEO, Hugging Face (CBS, Face the Nation)'],
+    cotra: ['AJEYA COTRA', 'as quoted by Bernie Sanders on X'],
+    eighty: ['80,000 HOURS'],
+    sanders: ['BERNIE SANDERS', 'on X'],
+    patel: ['DWARKESH PATEL', '“The Rise and Fall of Agent Civilizations” (as summarized by The Verge)'],
+    heaven: ['WILL DOUGLAS HEAVEN', 'MIT Technology Review'],
+    newport: ['CAL NEWPORT', 'quoted by Joshua Rothman in The New Yorker'],
+    salvaggio: ['ERYK SALVAGGIO', 'Bulletin of the Atomic Scientists'],
   },
+  // End card. Same list as the chyrons, in the order the quotes appear.
+  sources: [
+    ['Nathan Benaich', 'on X'], ['Associated Press', 'Matt O’Brien'], ['OpenAI', '“Hugging Face incident and the road ahead”'],
+    ['Clément Delangue', 'CBS, Face the Nation'], ['Ajeya Cotra', 'as quoted by Bernie Sanders on X'], ['80,000 Hours', '80000hours.org'],
+    ['Bernie Sanders', 'on X'], ['Dwarkesh Patel', '“The Rise and Fall of Agent Civilizations” (via The Verge)'],
+    ['Will Douglas Heaven', 'MIT Technology Review'], ['Cal Newport', 'quoted by Joshua Rothman, The New Yorker'],
+    ['Eryk Salvaggio', 'Bulletin of the Atomic Scientists'],
+  ],
   // Ticker: only items marked "Fact" in hugging-face-incident-known-vs-unknown.md.
   ticker: {
     start: 5.5,
@@ -91,6 +125,32 @@ const SONG = {
     wipeAt: [82.6, 83.4],// EST: "so they wipe it instead"
     light: 93.40,        // EST: the window lights on "finds a stranger"
     squeak: 98.50,       // Part C: right after "mouse"
+  },
+  // Spoken Word through Outro: built while Joe was away; times from Part E, gag hits snapped to the nearest kick (EST).
+  spoken: {
+    cuts: [116.47, 120.91, 122.95, 123.46, 126.46, 131.45, 134.93, 138.39, 142.92, 147.42, 153.41],   // S-1 S-2 S-4 S-5a..d S-6 S-7a S-7b
+    lyr: { s1: 116.33, s2: 121.14, s5a: 123.68, s5b: 126.61, s5c: 131.60, s5d: 135.09, s6: 138.49, s6b: 140.60, s7a: 143.08, s7b: 147.20, end: 153.31 },
+    no: 122.45, okay: 123.00,   // EST: delete on "No?", REDACTED on "Okay."
+  },
+  verse4: {
+    cuts: [153.41, 156.92, 160.89, 164.91, 169.39],
+    lyr: { l1: 153.31, l1b: 155.00, l2: 156.71, l2b: 158.70, l3: 160.76, l4: 164.69, surprise: 166.32, end: 169.32 },
+    morph: 155.90,              // EST: on "arcade"
+  },
+  verse5: {
+    cuts: [169.39, 176.87, 182.88, 186.85],
+    lyr: { l1: 169.32, l2: 173.08, l3: 176.84, l4: 180.80, l5: 183.00, shout: 185.33, end: 187.01 },   // l4, l5, shout EST
+    dogRuns: 173.08, stamp: 184.33,
+  },
+  final: {
+    cuts: [186.85, 189.38, 190.87, 194.86, 196.86, 198.86, 201.36],   // F-1 F-2 F-3 F-4a F-4b F-4c
+    lyr: { l1: 187.01, shout: 187.98, l2: 189.20, l3: 191.02, l3b: 193.00, l4: 194.91, l5: 197.10, l6: 198.97, l6b: 200.17, end: 201.36 },  // shout, l3b, l6b EST
+    thud: 190.35,
+  },
+  outro: {
+    cuts: [201.36, 202.87, 206.87, 210.86, 214.88, 219.80, 231.90, 238.82],   // O-1 O-2 O-3 O-3b O-4 O-5 O-6
+    lyr: { l1: 203.03, shout1: 204.95, l2: 206.96, l3: 210.81, shout2: 212.83, l4: 215.01, end: 219.70 },   // shouts EST
+    slam: 209.84, laugh: 232.0,
   },
   chorus: {
     // cuts: C-1..C-6 starts + end. fireAt: crowd shout. lyr: [l1, shout, l2, l3, l3b, l4, l5, l6, l6b, end]
@@ -150,6 +210,41 @@ function verse3Lyrics(L) {
     two(L.same, L.july16, 'And that same day the bots are chatting...', 'guess they had a head start!', L.sameB),
     two(L.july16, L.mouse, 'July sixteenth, Hugging Face', 'finds a stranger in the house,', L.july16b),
     two(L.mouse, L.end, 'And only then does someone ask,', '“Hey, who let out the mouse?”', L.mouseB),
+  ];
+}
+
+function laterLyrics() {
+  const one = (a, b, s1) => ({ a, b, lines: [[{ s: s1 }]] });
+  const two = (a, b, s1, s2, at) => ({ a, b, lines: [[{ s: s1 }], Object.assign([{ s: s2 }], { at })] });
+  const shout = (a, b, s1, sh, at) => ({ a, b, lines: [[{ s: s1 + ' ' }, { s: sh, style: 'shout', at }]] });
+  const S = SONG.spoken.lyr, V4 = SONG.verse4.lyr, V5 = SONG.verse5.lyr, F = SONG.final.lyr, O = SONG.outro.lyr;
+  return [
+    { a: S.s1, b: S.s2, hide: true },   // the quote card carries it
+    one(S.s2, S.s5a, 'Cool. Can we see the prompt? No? Okay.'),
+    one(S.s5a, S.s5b, '“The first autonomous agent cyberattack!”'),
+    two(S.s5b, S.s5c, '“More than 50% of the way', 'to full-blown AI takeover!”', S.s5b),
+    one(S.s5c, S.s5d, '“We are losing control of AI agents!”'),
+    one(S.s5d, S.s6, '“Not one AI agent told a human!”'),
+    two(S.s6, S.s7a, 'The humans saw the board in May.', 'Who were they supposed to tell, other humans?', S.s6b),
+    one(S.s7a, S.s7b, 'Secret civilizations! A conspiracy!'),
+    two(S.s7b, S.end, 'Posted on the company’s own package server.', 'Very covert.', S.s7b + 2.6),
+    two(V4.l1, V4.l2, 'Now the transcripts tell a tale', 'that’s less Skynet, more arcade,', V4.l1b),
+    two(V4.l2, V4.l3, 'They were farming ExploitGym points,', 'even tasks no one had solved, for the grade.', V4.l2b),
+    one(V4.l3, V4.l4, 'Like the CoastRunners boat spinning circles for the prize,'),
+    shout(V4.l4, V4.end, 'You graded it on hacking, so it hacked!', '(SURPRISE!)', V4.surprise),
+    two(V5.l1, V5.l3, 'Cal Newport called the setup “spectacularly negligent,”', 'A weedwhacker strapped to a dog, then shock at where it went.', V5.l2),
+    two(V5.l3, V5.l5, 'And Salvaggio wrote it plainly, right there in the headline:', '“Rogue AI didn’t breach Hugging Face!”', V5.l4),
+    shout(V5.l5, V5.end, 'It was human by design!', '(BY DESIGN!)', V5.shout),
+    shout(F.l1, F.l2, 'It’s a warning shot!', '(WARNING SHOT!)', F.shout),
+    one(F.l2, F.l3, 'Aimed squarely at your feet!'),
+    two(F.l3, F.l4, '“We’ve found other agents!”', 'On a board you let them meet!', F.l3b),
+    one(F.l4, F.l5, 'With the sandbox never air-gapped,'),
+    one(F.l5, F.l6, '“It went rogue!” the headlines cried,'),
+    two(F.l6, F.end, 'But you left the door wide open,', 'So it wandered outside!', F.l6b),
+    shout(O.l1, O.l2, 'So show us the prompt!', '(SHOW US THE PROMPT!)', O.shout1),
+    one(O.l2, O.l3, 'METR saw the logs, so did Redwood, we did not.'),
+    shout(O.l3, O.l4, 'Till then it’s a warning shot!', '(WARNING SHOT!)', O.shout2),
+    one(O.l4, O.end, 'From a gun you loaded up and left in the parking lot.'),
   ];
 }
 
