@@ -10,6 +10,9 @@ const SONG = {
     anchors: [
       { from: 0, period: 0.49775, phase: 0.4875 },    // Intro, Verse 1, Chorus 1 (fitted 0 to 44.8)
       { from: 44.6, period: 0.49725, phase: 0.5248 }, // Verse 2 (fitted 44.6 to 60; phase keeps the beat count continuous)
+      { from: 59.5, period: 0.49600, phase: 0.671 },  // Verse 3, May to June (fit error 0.10: drums are irregular here)
+      { from: 71.5, period: 0.49675, phase: 0.5768 }, // Verse 3, July 4 and 5 (0.04)
+      { from: 84.0, period: 0.49650, phase: 0.624 },  // Verse 3, July 8 to 16 (0.10)
       { from: 97, period: 0.49775, phase: 0.470 },    // Chorus 2 (fitted 97 to 117)
     ],
   },
@@ -21,6 +24,9 @@ const SONG = {
     levers: ['CLASSIFIERS', 'AUTO-REVIEW', 'CHAIN-OF-THOUGHT MONITOR'],
     noInternet: 'NO INTERNET', artifactory: 'ARTIFACTORY', offlineMode: 'OFFLINE MODE:', off: 'OFF',
     internet: 'THE INTERNET', board: 'MESSAGE BOARD', hf: 'HUGGING FACE', serverLog: 'SERVER LOG',
+    dates: ['MAY 12', 'LATE MAY', 'JUNE 27', 'JULY 4', 'JULY 5', 'JULY 8', 'JULY 16'],
+    firstNote: 'hi?', portSweep: 'PORT SWEEP ALERT', formerly: 'ARTIFACTORY (FORMERLY)', independence: 'INDEPENDENCE',
+    rebuilt: 'REBUILT', sameDay: 'SAME DAY', chat: ['we’re back', 'hi again!'],
   },
   counts: { board: 1200, trip: 700 },
   // Network headline banners (story text). Not speaker credits; those are chyrons.
@@ -71,6 +77,21 @@ const SONG = {
     creak: 49.95,                   // door starts to open
     // drums stop 56.7 to 58.1 ("...and the server logged them there"); tallies scratch through it
   },
+  verse3: {
+    // The ship's log: each date is a logbook page that turns at the cut and gets stamped on a beat.
+    cuts: [59.72, 63.67, 68.17, 71.63, 77.60, 84.08, 91.49, 95.53, 99.54],
+    stamps: [60.21, 64.15, 68.63, 72.12, 78.07, 84.53, 92.00],   // EST: first beat after each page turn
+    lyr: { may12: 59.88, lateMay: 63.50, lateMayB: 65.38, more: 67.50, june27: 68.14, july4: 71.54, indep: 74.50,
+      july5: 77.75, july5b: 79.70, wipe: 81.72, july8: 83.93, same: 87.50, sameB: 89.50, july16: 91.50, july16b: 93.40,
+      mouse: 95.47, mouseB: 97.40, end: 99.73 },   // ...B, more, indep, wipe, july16b are EST from vocal energy
+    pin: 61.12,          // the first note goes up (beat 122)
+    clangs: [70.11, 70.61],
+    fell: 73.12,         // the shack falls in the drum stop (72.4 to 74.1)
+    banner: 75.62,       // INDEPENDENCE (Part E)
+    wipeAt: [82.6, 83.4],// EST: "so they wipe it instead"
+    light: 93.40,        // EST: the window lights on "finds a stranger"
+    squeak: 98.50,       // Part C: right after "mouse"
+  },
   chorus: {
     // cuts: C-1..C-6 starts + end. fireAt: crowd shout. lyr: [l1, shout, l2, l3, l3b, l4, l5, l6, l6b, end]
     one: {
@@ -111,6 +132,24 @@ function verse2Lyrics(L) {
     two(l2, l3, 'But nobody set Artifactory offline,', 'and the sandbox had a door.', l2b),
     two(l3, l4, 'Twelve hundred little agents', 'found a message board to share,', l3b),
     two(l4, end, 'Seven hundred took the field trip,', 'and the server logged them there.', l4b),
+  ];
+}
+
+function verse3Lyrics(L) {
+  const one = (a, b, s1) => ({ a, b, lines: [[{ s: s1 }]] });
+  const two = (a, b, s1, s2, at) => ({ a, b, lines: [[{ s: s1 }], Object.assign([{ s: s2 }], { at })] });
+  return [
+    one(L.may12, L.lateMay, 'May the twelfth, the first note’s posted on the board,'),
+    { a: L.lateMay, b: L.june27, lines: [[{ s: 'Late May the team spots chatter,' }],
+      Object.assign([{ s: 'bots online... and then some more! ' }, { s: '(SOME MORE!)', style: 'shout', at: L.more }], { at: L.lateMayB })] },
+    one(L.june27, L.july4, 'June twenty-seventh, a port sweep rings the bell,'),
+    two(L.july4, L.july5, 'And on the Fourth of July the Artifactory fell!', 'The bots declared independence!', L.indep),
+    two(L.july5, L.wipe, 'July fifth, an incident!', 'The leads all scratch their heads,', L.july5b),
+    one(L.wipe, L.july8, 'Can’t tell how bots all talk, so they wipe it instead.'),
+    one(L.july8, L.same, 'July eighth, it’s all brand new, they hit restart,'),
+    two(L.same, L.july16, 'And that same day the bots are chatting...', 'guess they had a head start!', L.sameB),
+    two(L.july16, L.mouse, 'July sixteenth, Hugging Face', 'finds a stranger in the house,', L.july16b),
+    two(L.mouse, L.end, 'And only then does someone ask,', '“Hey, who let out the mouse?”', L.mouseB),
   ];
 }
 

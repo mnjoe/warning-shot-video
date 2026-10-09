@@ -6,6 +6,7 @@
 <script src="scenes/intro.js"></script>
 <script src="scenes/verse1.js"></script>
 <script src="scenes/verse2.js"></script>
+<script src="scenes/verse3.js"></script>
 <script src="scenes/chorus.js"></script>
 <script>
 // Shot list in song order. Add sections here as they get built.
@@ -13,6 +14,7 @@ const SHOTS = [
   ...introShots(SONG.intro),
   ...verse1Shots(SONG.verse1),
   ...verse2Shots(SONG.verse2),
+  ...verse3Shots(SONG.verse3),
   ...chorusShots(SONG.chorus.one, false),
   ...chorusShots(SONG.chorus.two, true),
 ].sort((a, b) => a.a - b.a);
@@ -20,6 +22,7 @@ const LYRICS = [
   ...introLyrics(SONG.intro),
   ...verse1Lyrics(SONG.verse1.lyr),
   ...verse2Lyrics(SONG.verse2.lyr),
+  ...verse3Lyrics(SONG.verse3.lyr),
   ...chorusLyrics(SONG.chorus.one.lyr),
   ...chorusLyrics(SONG.chorus.two.lyr),
 ];
@@ -39,6 +42,12 @@ function render(t, dbg) {
   const sh = SHOTS.find(s => t >= s.a && t < s.b) || SHOTS[SHOTS.length - 1];
   const lt = t - sh.a, r = sh.fn(t, lt);
   let out = r.svg;
+  // Page-turn transition (the ship's log): the previous shot stays left of the turning page's edge.
+  const PAGE = 0.4, idx = SHOTS.indexOf(sh);
+  if (sh.trans === 'page' && lt < PAGE && idx > 0) {
+    const prev = SHOTS[idx - 1], edge = lerp(W + 40, -120, ease(lt / PAGE));
+    out += `<clipPath id="pageclip"><rect x="0" y="0" width="${f(Math.max(0, edge))}" height="${H}"/></clipPath><g clip-path="url(#pageclip)">${prev.fn(t, t - prev.a).svg}</g>` + R.pageEdge(edge);
+  }
   if (sh.chyron) out += R.chyron(lt, sh.chyron[0], sh.chyron[1]);
   const ly = LYRICS.find(L => t >= L.a && t < L.b);
   if (ly && !ly.hide) out += R.lyrics(t, ly);

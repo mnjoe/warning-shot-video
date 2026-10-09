@@ -81,7 +81,7 @@ Check a theme with `--stills` before rendering video. Label boxes size to their 
 - `lyrics`: `size, shoutSize, stroke, shoutStroke, y, lineGap`.
 - `ticker`: `speed, size`.
 - `flashback`: feColorMatrix values for flashbacks (sepia by default).
-- `copy`: theme flavor text: `clunk, creak, network, networkFull, liveFrom, masthead, earlier, live, replay`. Scenes read it with `copy(k)`. Story text lives in `SONG.labels` and `SONG.headlines`, not here.
+- `copy`: theme flavor text: `clunk, creak, clang, squeak, moreShout, network, networkFull, liveFrom, masthead, earlier, live, replay`. Scenes read it with `copy(k)`. Story text lives in `SONG.labels` and `SONG.headlines`, not here.
 
 ## Theme contract (rigs every theme must provide)
 
@@ -130,6 +130,24 @@ Inherited from `pirate-flat` unless overridden. `t` is song time in seconds, `lt
 | `counter(o)` | red count badge: `x (right edge), y, value, k`; formats 1,200 |
 | `harborTown(o)` | harbor town: `x, y (waterline), s, label, t, night (0 to 1)` |
 | `ledger(o)` | open ledger with tally marks: `x, y, s, title, marks` (fractional marks draw the next stroke) |
+| `pageEdge(x)` | turning logbook page; the stage uses it for `trans: 'page'` shots |
+| `dateStamp(o)` | red rubber-stamped date under the bug: `x (right edge), y, text, k` |
+| `officer(o)` | lab officer (tricorn, lab coat, nitrile gloves; generic, nobody real): `x, y, s, t, phase, flip, scratch, spyglass, point, shrug, look, frown` |
+| `tricorn(o)` | pirate tricorn with gold trim and skull: `x, y, s` |
+| `crowsNest(o)`, `crowsNestFront(o)` | mast and crow's nest, drawn behind and in front of whoever stands in it |
+| `spyView(x, y, r, bg, inner)` | brass-ringed spyglass circle |
+| `stickyNote(x, y, k, text)` | one big pinned note |
+| `bell(o)`, `shakeLines(x, y, r, k)` | ship's bell (`swing`) and its motion lines |
+| `alertSign(o)` | flashing red alert board: `x, y, s, text, on` |
+| `nightSky(t, y1)`, `moon(x, y, r)`, `firework(x, y, p, colorKey)` | night set |
+| `rubble(o)` | pile of planks |
+| `heldBanner(o)` | cloth banner between two poles: `x, y, w, text, s, t` |
+| `corkboard(o)` | pins and tangled red string: `x, y, s, wipe (0 to 1)` |
+| `chatBubble(x, y, k, text)`, `sparkle(x, y, p, s)`, `divider(x)` | small bubbles, shine, split-screen line |
+| `mouse(o)` | `x, y, s, t, run, flip` |
+
+Shots may set `trans: 'page'`: for the first 0.4 s the previous shot stays left of a turning page (Verse 3).
+`seaRect` takes `fillKey` (a color token name) for night water.
 
 Lyric lines may set `reserve: true` so words that have not appeared yet still hold their space (the count-in uses it; the chorus does not).
 Shots may set `chrome: false` to hide the LIVE tag, bug and ticker (the cold open does). The chrome slides in at I-2.
@@ -165,7 +183,8 @@ Claude can't listen, so EST times are located from the audio and then confirmed 
 | Chorus 1 and 2 | C-1 to C-6 | approved; C-3 arm comes in from the side; Chorus 2 times confirmed by ear |
 | Verse 1 | V1-1 to V1-4 | approved; V1-3/V1-4 cut moved to 25.37; sign drop and clunks set by ear |
 | Verse 2 | V2-1 to V2-6 | approved |
-| Verse 3 | V3-1 to V3-8 | next |
+| Verse 3 | V3-1 to V3-8 | approved |
+| Spoken Word, Verse 4, Verse 5, Final Chorus, Outro | | built on branch `wip`, awaiting review |
 | Everything else | | not started; build in song order |
 
 Times still marked EST in `timeline.js` should be checked by ear as their sections are built.

@@ -24,6 +24,7 @@ registerTheme('newsprint', {
       shadow: '#000000', vignette: '#000000', fleck: '#000000', liveText: '#FFFFFF',
       lyric: '#FFFFFF', lyricShout: '#D7141A', lyricOutline: '#111111',
       land: '#BDBAB0', landDark: '#8A8F94', windowLit: '#F4F2EC',
+      skin: '#E4E1D8', night: '#2A2A2A', nightDeep: '#141414', star: '#FFFFFF', cork: '#A9A59C', string: '#D7141A', mouse: '#8A8F94', mouseEar: '#C9C6BC',
     },
     bots: [
       { band: '#D7141A', head: '#C9CCCF', stripe: '#111111' },

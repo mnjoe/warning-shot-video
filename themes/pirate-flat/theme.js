@@ -24,6 +24,7 @@ registerTheme('pirate-flat', {
       shadow: '#1E2430', vignette: '#2B1A0A', fleck: '#3A2A18', liveText: '#FFFDF6',
       lyric: '#F3E9D2', lyricShout: '#C9A043', lyricOutline: '#122340',
       land: '#9DB38A', landDark: '#6E8B5A', windowLit: '#F6D77A',
+      skin: '#E9C6A0', night: '#16243F', nightDeep: '#0C1526', star: '#F6F0D8', cork: '#C89B62', string: '#C8241E', mouse: '#9A9188', mouseEar: '#E7B7A8',
     },
     // Bot color variants, cycled by index.
     bots: [
@@ -40,7 +41,7 @@ registerTheme('pirate-flat', {
     ticker: { speed: 95, size: 25 },
     // Sepia matrix for flashbacks (feColorMatrix values).
     flashback: '0.393 0.769 0.189 0 0  0.349 0.686 0.168 0 0  0.272 0.534 0.131 0 0  0 0 0 1 0',
-    copy: { clunk: 'CLUNK!', creak: 'CREAK...', network: 'PNN', networkFull: 'PIRATE NEWS NETWORK', liveFrom: 'LIVE FROM THE HIGH SEAS', masthead: 'The High Seas Herald', earlier: 'Earlier...', live: 'LIVE', replay: 'REPLAY' },
+    copy: { clunk: 'CLUNK!', creak: 'CREAK...', clang: 'CLANG!', squeak: 'SQUEAK!', moreShout: 'SOME MORE!', network: 'PNN', networkFull: 'PIRATE NEWS NETWORK', liveFrom: 'LIVE FROM THE HIGH SEAS', masthead: 'The High Seas Herald', earlier: 'Earlier...', live: 'LIVE', replay: 'REPLAY' },
   },
   rigs: {
     // ---- shared <defs>, rebuilt from tokens ----
@@ -280,7 +281,7 @@ registerTheme('pirate-flat', {
       return s;
     },
     seaRect(t, y0, y1 = H, opts = {}) {
-      return `<rect x="-40" y="${y0}" width="${W + 80}" height="${y1 - y0}" fill="${opts.fill || col('sea')}"/>` + R.waves(t, y0, y1, opts);
+      return `<rect x="-40" y="${y0}" width="${W + 80}" height="${y1 - y0}" fill="${opts.fill || (opts.fillKey ? col(opts.fillKey) : col('sea'))}"/>` + R.waves(t, y0, y1, opts);
     },
     smokePuff(x, y, r, a) {
       return `<g opacity="${f(a)}"><circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="${col('smoke')}" stroke="${col('smokeEdge')}" stroke-width="${lw('fine')}"/><circle cx="${f(x + r * .6)}" cy="${f(y - r * .4)}" r="${f(r * .7)}" fill="${col('smokeHi')}"/></g>`;
@@ -677,14 +678,19 @@ registerTheme('pirate-flat', {
         <rect width="${f(wd)}" height="60" rx="8" fill="${col('live')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
         ${txt(wd / 2, 45, v, size, col('liveText'), { font: TK.font.display })}</g>`;
     },
-    // Harbor town on the far shore. o: x,y (waterline),s,label,t,night (0..1),window (0..1 one window lit)
+    // Harbor town on the far shore. o: x,y (waterline),s,label,t,night (0..1),lit (0..1 the middle house's window), stranger (silhouette in it)
     harborTown(o) {
       const ink = col('ink'), nt = o.night || 0;
-      const house = (x, w, h, roof) => `<rect x="${x}" y="${-h}" width="${w}" height="${h}" fill="${col('cream')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
-        <path d="M${x - 10} ${-h} L${x + w / 2} ${-h - w * 0.55} L${x + w + 10} ${-h} Z" fill="${roof}" stroke="${ink}" stroke-width="${lw('heavy')}" stroke-linejoin="round"/>
-        <rect x="${x + w / 2 - 12}" y="${-h + 26}" width="24" height="24" fill="${col('navy')}" stroke="${ink}" stroke-width="${lw('thin')}"/>`;
+      const house = (x, w, h, roof, i) => {
+        const win = i === 1 && o.lit ? col('windowLit') : (nt > 0.5 ? col('nightDeep') : col('navy'));
+        const glow = i === 1 && o.lit ? `<circle cx="${x + w / 2}" cy="${-h + 38}" r="${f(40 * o.lit)}" fill="${col('windowLit')}" opacity="${f(0.35 * o.lit)}"/>` : '';
+        const who = i === 1 && o.stranger ? `<g transform="translate(${x + w / 2} ${-h + 52}) scale(0.2)" opacity="${f(o.stranger)}"><rect x="-26" y="-114" width="52" height="44" rx="12" fill="${ink}"/><rect x="-22" y="-70" width="44" height="70" rx="10" fill="${ink}"/><line x1="8" y1="-115" x2="12" y2="-130" stroke="${ink}" stroke-width="6"/><circle cx="12" cy="-132" r="6" fill="${ink}"/></g>` : '';
+        return `${glow}<rect x="${x}" y="${-h}" width="${w}" height="${h}" fill="${nt > 0.5 ? col('navy') : col('cream')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        <path d="M${x - 10} ${-h} L${x + w / 2} ${-h - w * 0.55} L${x + w + 10} ${-h} Z" fill="${nt > 0.5 ? col('navyDeep') : roof}" stroke="${ink}" stroke-width="${lw('heavy')}" stroke-linejoin="round"/>
+        <rect x="${x + w / 2 - 12}" y="${-h + 26}" width="24" height="24" fill="${win}" stroke="${ink}" stroke-width="${lw('thin')}"/>${who}`;
+      };
       let s = `<rect x="-280" y="-18" width="560" height="30" fill="${col('wood')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>`;
-      s += house(-240, 110, 130, col('rust')) + house(-110, 130, 180, col('navy')) + house(40, 100, 120, col('brassDark')) + house(160, 90, 150, col('rust'));
+      s += house(-240, 110, 130, col('rust'), 0) + house(-110, 130, 180, col('navy'), 1) + house(40, 100, 120, col('brassDark'), 2) + house(160, 90, 150, col('rust'), 3);
       s += `<g transform="translate(0 -18)"><rect x="-150" y="-32" width="300" height="46" rx="5" fill="${col('parch')}" stroke="${ink}" stroke-width="${lw('base')}"/>
         ${txt(0, 2, o.label || '', fitSize(o.label || '', 34, TK.font.display, 280), ink, { font: TK.font.display })}</g>`;
       return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})">${s}</g>`;
@@ -712,6 +718,196 @@ registerTheme('pirate-flat', {
         else s += `<line x1="${gx - 6}" y1="${sy + 10}" x2="${f(gx - 6 + 42 * p)}" y2="${f(sy + 10 - 22 * p)}" stroke="${col('live')}" stroke-width="${lw('mid')}" stroke-linecap="round"/>`;
       }
       return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})">${s}</g>`;
+    },
+
+    // ---- verse 3 ----
+    // The turning page of the ship's logbook: its edge at x, sweeping right to left.
+    pageEdge(x) {
+      const ink = col('ink');
+      return `<path d="M${f(x)} -10 Q${f(x + 30)} ${H / 2} ${f(x)} ${H + 10} L${f(x + 70)} ${H + 10} Q${f(x + 90)} ${H / 2} ${f(x + 70)} -10 Z" fill="${col('parch')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        <path d="M${f(x + 70)} -10 Q${f(x + 90)} ${H / 2} ${f(x + 70)} ${H + 10}" fill="none" stroke="${col('parchDark')}" stroke-width="10" opacity="0.7"/>
+        <rect x="${f(x - 26)}" y="-10" width="26" height="${H + 20}" fill="${col('shadow')}" opacity="0.18"/>`;
+    },
+    // Rubber-stamped date tag, top right under the network bug. o: x (right edge),y,text,k (0..1 stamp)
+    dateStamp(o) {
+      if (o.k <= 0) return '';
+      const ink = col('ink'), size = 34, wd = textWidth(o.text, size, TK.font.display) + 40, sc = lerp(2.4, 1, easeOut(clamp(o.k))), a = clamp(o.k * 3);
+      return `<g transform="translate(${f(o.x - wd / 2)} ${f(o.y)}) rotate(-6) scale(${f(sc)})" opacity="${f(a)}">
+        <rect x="${f(-wd / 2)}" y="-26" width="${f(wd)}" height="52" rx="6" fill="${col('paper')}" stroke="${col('live')}" stroke-width="${lw('bold')}"/>
+        <rect x="${f(-wd / 2 + 6)}" y="-20" width="${f(wd - 12)}" height="40" rx="4" fill="none" stroke="${col('live')}" stroke-width="${lw('fine')}"/>
+        ${txt(0, 12, o.text, size, col('live'), { font: TK.font.display })}</g>`;
+    },
+    // A ship's officer from the AI lab: tricorn hat, lab coat, nitrile gloves. Generic, not anyone real.
+    // o: x,y (feet),s,t,phase,flip,scratch (0..1 hand to head),spyglass (0..1 raised),point (0..1 arm out),shrug (0..1),look,frown
+    officer(o) {
+      const ink = col('ink'), t = o.t, ph = o.phase || 0, sc = o.scratch || 0, spy = o.spyglass || 0, pt = o.point || 0, sh = o.shrug || 0, look = o.look || 0;
+      const blink = ((t + ph * 1.9) % 3.1) < 0.11;
+      const glove = (x, y) => `<circle cx="${f(x)}" cy="${f(y)}" r="7" fill="${col('nitrile')}" stroke="${ink}" stroke-width="${lw('thin')}"/>`;
+      const arm = (sx, sy, ex, ey, cx, cy) => `<path d="M${sx} ${sy} Q${f(cx)} ${f(cy)} ${f(ex)} ${f(ey)}" fill="none" stroke="${ink}" stroke-width="15" stroke-linecap="round"/><path d="M${sx} ${sy} Q${f(cx)} ${f(cy)} ${f(ex)} ${f(ey)}" fill="none" stroke="${col('labCoat')}" stroke-width="9" stroke-linecap="round"/>${glove(ex, ey)}`;
+      // back arm: scratch head, or shrug, or hang
+      const wig = Math.sin(t * 22) * 4 * sc;
+      let bx = lerp(-24, -36, sh), by = lerp(-46, -92, sh);
+      bx = lerp(bx, -14 + wig, sc); by = lerp(by, -146, sc);
+      const back = arm(-18, -98, bx, by, lerp(-34, -40, Math.max(sc, sh)), lerp(-70, -120, Math.max(sc, sh)));
+      // front arm: spyglass to the eye, or point, or hang/shrug
+      let fx = lerp(24, 36, sh), fy = lerp(-46, -92, sh);
+      fx = lerp(fx, 50, pt); fy = lerp(fy, -104, pt);
+      fx = lerp(fx, 22, spy); fy = lerp(fy, -128, spy);
+      const front = arm(18, -98, fx, fy, lerp(34, 40, Math.max(sh, pt, spy)), lerp(-70, -112, Math.max(sh, pt, spy)));
+      const glass = spy > 0.05 ? `<g transform="translate(${f(fx)} ${f(fy - 4)}) rotate(-8)" opacity="${f(clamp(spy * 2))}"><rect x="-4" y="-9" width="70" height="18" rx="4" fill="${col('brass')}" stroke="${ink}" stroke-width="${lw('base')}"/><rect x="40" y="-11" width="30" height="22" rx="4" fill="${col('brassDark')}" stroke="${ink}" stroke-width="${lw('base')}"/></g>` : '';
+      const eyeY = -138, mouth = o.frown ? `<path d="M2 -118 Q9 -124 16 -118" fill="none" stroke="${ink}" stroke-width="${lw('base')}" stroke-linecap="round"/>` : `<path d="M2 -121 Q9 -115 16 -121" fill="none" stroke="${ink}" stroke-width="${lw('base')}" stroke-linecap="round"/>`;
+      const eyes = blink ? `<line x1="${4 + look}" y1="${eyeY}" x2="${12 + look}" y2="${eyeY}" stroke="${ink}" stroke-width="${lw('base')}"/>` : `<circle cx="${8 + look}" cy="${eyeY}" r="3.6" fill="${ink}"/><circle cx="${22 + look}" cy="${eyeY}" r="3.6" fill="${ink}"/>`;
+      const body = `
+        <rect x="-14" y="-40" width="11" height="40" rx="4" fill="${col('navy')}" stroke="${ink}" stroke-width="${lw('thin')}"/><rect x="3" y="-40" width="11" height="40" rx="4" fill="${col('navy')}" stroke="${ink}" stroke-width="${lw('thin')}"/>
+        <ellipse cx="-6" cy="-2" rx="10" ry="5" fill="${ink}"/><ellipse cx="12" cy="-2" rx="10" ry="5" fill="${ink}"/>
+        ${back}
+        <path d="M-26 -104 Q0 -112 26 -104 L32 -32 L-32 -32 Z" fill="${col('labCoat')}" stroke="${ink}" stroke-width="${lw('base')}" stroke-linejoin="round"/>
+        <line x1="2" y1="-104" x2="2" y2="-34" stroke="${col('labCoatShade')}" stroke-width="${lw('base')}"/>
+        <circle cx="10" cy="-84" r="3" fill="${col('labButton')}" stroke="${ink}" stroke-width="1"/><circle cx="10" cy="-62" r="3" fill="${col('labButton')}" stroke="${ink}" stroke-width="1"/>
+        <rect x="-20" y="-92" width="18" height="14" rx="2" fill="${col('badge')}" stroke="${ink}" stroke-width="1"/><rect x="-20" y="-92" width="18" height="4" fill="${col('badgeStrip')}"/>
+        <circle cx="4" cy="-134" r="26" fill="${col('skin')}" stroke="${ink}" stroke-width="${lw('base')}"/>
+        ${eyes}${mouth}
+        ${R.tricorn({ x: 4, y: -152, s: 1 })}
+        ${front}${glass}`;
+      const fl = o.flip ? -1 : 1;
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s * fl)} ${f(o.s)})">${body}</g>`;
+    },
+    // Classic pirate tricorn, seen from the front: crown behind, brim swept up into two side corners and a front point,
+    // gold trim on the turned-up edge, skull and crossbones on the front. o: x,y (where it sits on the head),s
+    tricorn(o) {
+      const ink = col('ink'), hat = col('navyDeep');
+      const brim = `M-58 -44 Q-50 -6 0 2 Q50 -6 58 -44 Q40 -30 22 -30 L0 -58 L-22 -30 Q-40 -30 -58 -44 Z`;
+      const trim = `M-58 -44 Q-40 -30 -22 -30 L0 -58 L22 -30 Q40 -30 58 -44`;
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})">
+        <path d="M-30 -18 Q-32 -62 0 -66 Q32 -62 30 -18 Z" fill="${hat}" stroke="${ink}" stroke-width="${lw('base')}" stroke-linejoin="round"/>
+        <path d="${brim}" fill="${hat}" stroke="${ink}" stroke-width="${lw('heavy')}" stroke-linejoin="round"/>
+        <path d="${trim}" fill="none" stroke="${col('brass')}" stroke-width="${lw('heavy')}" stroke-linejoin="round" stroke-linecap="round"/>
+        <g transform="translate(0 -22)">
+          <path d="M-11 -6 L11 6 M-11 6 L11 -6" stroke="${col('cream')}" stroke-width="3.2" stroke-linecap="round"/>
+          <circle cx="0" cy="-4" r="7" fill="${col('cream')}"/><rect x="-4.5" y="0" width="9" height="5" rx="1.5" fill="${col('cream')}"/>
+          <circle cx="-2.6" cy="-4.5" r="1.7" fill="${hat}"/><circle cx="2.6" cy="-4.5" r="1.7" fill="${hat}"/></g>
+      </g>`;
+    },
+    // Mast with a crow's nest. o: x,y (base),s. The nest's floor is at y - 420*s.
+    crowsNest(o) {
+      const ink = col('ink');
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})"><rect x="-14" y="-560" width="28" height="580" fill="${col('woodDark')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        <line x1="-140" y1="-560" x2="140" y2="-560" stroke="${col('woodDark')}" stroke-width="16" stroke-linecap="round"/>
+        <path d="M-70 -420 L70 -420 L60 -360 L-60 -360 Z" fill="${col('wood')}" stroke="${ink}" stroke-width="${lw('heavy')}" stroke-linejoin="round"/>
+        <line x1="-66" y1="-398" x2="66" y2="-398" stroke="${col('woodSeam')}" stroke-width="${lw('base')}"/></g>`;
+    },
+    crowsNestFront(o) {
+      const ink = col('ink');
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})"><path d="M-78 -440 L78 -440 L66 -360 L-66 -360 Z" fill="${col('wood')}" stroke="${ink}" stroke-width="${lw('heavy')}" stroke-linejoin="round"/>
+        <line x1="-72" y1="-412" x2="72" y2="-412" stroke="${col('woodSeam')}" stroke-width="${lw('base')}"/><line x1="-70" y1="-386" x2="70" y2="-386" stroke="${col('woodSeam')}" stroke-width="${lw('base')}"/></g>`;
+    },
+    // Ship's bell on a bracket. o: x,y (pivot),s,swing (deg)
+    bell(o) {
+      const ink = col('ink');
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})">
+        <rect x="-120" y="-30" width="240" height="26" rx="6" fill="${col('woodDark')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        <g transform="rotate(${f(o.swing || 0)})"><line x1="0" y1="-4" x2="0" y2="30" stroke="${ink}" stroke-width="${lw('bold')}"/>
+        <path d="M-70 200 Q-74 110 -44 60 Q0 20 44 60 Q74 110 70 200 Q0 214 -70 200 Z" fill="${col('brass')}" stroke="${ink}" stroke-width="${lw('bold')}" stroke-linejoin="round"/>
+        <path d="M-50 186 Q0 196 50 186" fill="none" stroke="${col('brassDark')}" stroke-width="${lw('heavy')}"/><path d="M-30 80 Q-40 120 -38 170" fill="none" stroke="${col('cream')}" stroke-width="${lw('heavy')}" opacity="0.6" stroke-linecap="round"/>
+        <line x1="0" y1="200" x2="0" y2="232" stroke="${ink}" stroke-width="${lw('heavy')}"/><circle cx="0" cy="238" r="12" fill="${col('iron')}" stroke="${ink}" stroke-width="${lw('base')}"/></g></g>`;
+    },
+    // Motion lines around something shaking. x,y center, r radius, k 0..1 strength
+    shakeLines(x, y, r, k) {
+      if (k <= 0) return '';
+      const ink = col('live');
+      return [-1, 1].map(m => `<path d="M${f(x + m * r)} ${f(y - 40)} q${f(m * 22)} 40 0 80 M${f(x + m * (r + 26))} ${f(y - 56)} q${f(m * 26)} 56 0 112" fill="none" stroke="${ink}" stroke-width="${lw('bold')}" stroke-linecap="round" opacity="${f(k)}"/>`).join('');
+    },
+    // Red alert board. o: x,y,s,text,on (0..1 flash)
+    alertSign(o) {
+      const ink = col('ink'), size = fitSize(o.text, 44, TK.font.display, 420), lines = o.text.split(' '), m = Math.ceil(lines.length / 2);
+      const l1 = lines.slice(0, m).join(' '), l2 = lines.slice(m).join(' '), bw = Math.max(textWidth(l1, 46, TK.font.display), textWidth(l2, 46, TK.font.display)) + 60;
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})"><rect x="${f(-bw / 2 + 7)}" y="-64" width="${f(bw)}" height="136" rx="10" fill="${col('shadow')}" opacity="0.3"/>
+        <rect x="${f(-bw / 2)}" y="-70" width="${f(bw)}" height="136" rx="10" fill="${o.on > 0.5 ? col('live') : col('rust')}" stroke="${ink}" stroke-width="${lw('bold')}"/>
+        ${txt(0, -14, l1, 46, col('liveText'), { font: TK.font.display })}${txt(0, 42, l2, 46, col('liveText'), { font: TK.font.display })}</g>`;
+    },
+    nightSky(t, y1 = H) {
+      let s = `<rect x="0" y="0" width="${W}" height="${y1}" fill="${col('night')}"/>`;
+      for (let i = 0; i < 46; i++) { const x = rnd(i * 1.7) * W, y = rnd(i * 3.3 + 2) * y1 * 0.8, tw = 0.5 + 0.5 * Math.sin(t * 3 + i); s += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(1 + rnd(i * 5.1) * 1.6)}" fill="${col('star')}" opacity="${f(0.4 + 0.6 * tw)}"/>`; }
+      return s;
+    },
+    moon(x, y, r = 34) { return `<circle cx="${x}" cy="${y}" r="${r}" fill="${col('star')}" stroke="${col('parchDark')}" stroke-width="${lw('fine')}"/><circle cx="${x + r * 0.35}" cy="${y - r * 0.2}" r="${r * 0.86}" fill="${col('night')}"/>`; },
+    // Firework burst at x,y; p 0..1 through its life; color is a token name
+    firework(x, y, p, colorKey) {
+      if (p <= 0 || p >= 1) return '';
+      const c = col(colorKey), r = easeOut(p) * 110, a = 1 - easeIn(p);
+      let s = '';
+      for (let i = 0; i < 14; i++) { const ang = i * Math.PI * 2 / 14, x1 = x + Math.cos(ang) * r * 0.45, y1 = y + Math.sin(ang) * r * 0.45 + p * p * 30, x2 = x + Math.cos(ang) * r, y2 = y + Math.sin(ang) * r + p * p * 40;
+        s += `<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke="${c}" stroke-width="${lw('heavy')}" stroke-linecap="round" opacity="${f(a)}"/><circle cx="${f(x2)}" cy="${f(y2)}" r="4" fill="${col('star')}" opacity="${f(a)}"/>`; }
+      return s;
+    },
+    // Pile of planks where the shack stood. o: x,y,s
+    rubble(o) {
+      const ink = col('ink');
+      const planks = [[-120, -10, 8], [-40, -24, -14], [40, -8, 22], [100, -18, -6], [-80, -40, 30], [20, -44, -25], [-10, -60, 6], [70, -50, 40]];
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})">${planks.map(([x, y, r], i) => `<g transform="translate(${x} ${y}) rotate(${r})"><rect x="-70" y="-10" width="140" height="20" rx="3" fill="${i % 3 === 0 ? col('rust') : col('wood')}" stroke="${ink}" stroke-width="${lw('heavy')}"/><circle cx="-56" cy="0" r="3" fill="${col('iron')}"/></g>`).join('')}</g>`;
+    },
+    // Cloth banner held between two poles (poles end at y). o: x,y (pole bottoms, center),w,text,s
+    heldBanner(o) {
+      const ink = col('ink'), s = o.s || 1, w = o.w, size = fitSize(o.text, 40, TK.font.display, w - 30), wave = Math.sin((o.t || 0) * 4) * 4;
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(s)})">
+        <line x1="${-w / 2}" y1="0" x2="${-w / 2}" y2="-190" stroke="${col('woodDark')}" stroke-width="10" stroke-linecap="round"/><line x1="${w / 2}" y1="0" x2="${w / 2}" y2="-190" stroke="${col('woodDark')}" stroke-width="10" stroke-linecap="round"/>
+        <path d="M${-w / 2} -184 Q0 ${f(-174 + wave)} ${w / 2} -184 L${w / 2} -124 Q0 ${f(-114 + wave)} ${-w / 2} -124 Z" fill="${col('cream')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        ${txt(0, f(-140 + wave * 0.6), o.text, size, col('live'), { font: TK.font.display })}</g>`;
+    },
+    // Corkboard of pins and tangled red string. o: x,y (center),s,wipe (0..1 cleared from left)
+    corkboard(o) {
+      const ink = col('ink'), bw = 520, bh = 320, pins = [[-200, -110], [180, -120], [-150, 100], [200, 90], [0, -60], [-60, 40], [110, 10], [-220, 10], [60, 120], [150, -40]];
+      let str = '';
+      for (let i = 0; i < 18; i++) { const a = pins[i % pins.length], b = pins[(i * 7 + 3) % pins.length]; str += `<path d="M${a[0]} ${a[1]} Q${f((a[0] + b[0]) / 2 + (rnd(i) - 0.5) * 120)} ${f((a[1] + b[1]) / 2 + (rnd(i + 9) - 0.5) * 120)} ${b[0]} ${b[1]}" fill="none" stroke="${col('string')}" stroke-width="${lw('base')}"/>`; }
+      let notes = pins.map(([x, y], i) => `<g transform="translate(${x} ${y + 18}) rotate(${f((rnd(i * 2.2) - 0.5) * 16)})"><rect x="-26" y="-6" width="52" height="38" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('fine')}"/><line x1="-18" y1="8" x2="16" y2="8" stroke="${col('newsLine')}" stroke-width="2"/><line x1="-18" y1="18" x2="8" y2="18" stroke="${col('newsLine')}" stroke-width="2"/></g>`).join('');
+      const pinDots = pins.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="7" fill="${col('live')}" stroke="${ink}" stroke-width="${lw('fine')}"/>`).join('');
+      const wx = -bw / 2 + bw * clamp(o.wipe || 0);
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})">
+        <rect x="${-bw / 2 - 18}" y="${-bh / 2 - 18}" width="${bw + 36}" height="${bh + 36}" rx="8" fill="${col('woodDark')}" stroke="${ink}" stroke-width="${lw('bold')}"/>
+        <rect x="${-bw / 2}" y="${-bh / 2}" width="${bw}" height="${bh}" fill="${col('cork')}" stroke="${ink}" stroke-width="${lw('base')}"/>
+        <clipPath id="corkclip"><rect x="${f(wx)}" y="${-bh / 2}" width="${f(bw / 2 - wx)}" height="${bh}"/></clipPath>
+        <g clip-path="url(#corkclip)">${notes}${str}${pinDots}</g></g>`;
+    },
+    // Spyglass view: a brass-ringed circle at x,y showing bg (full frame) with inner drawn centered on the circle.
+    spyView(x, y, r, bg, inner) {
+      const ink = col('ink');
+      return `<clipPath id="spyclip"><circle cx="${x}" cy="${y}" r="${r}"/></clipPath><g clip-path="url(#spyclip)">${bg}<g transform="translate(${x} ${y})">${inner}</g>
+        <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${col('shadow')}" stroke-width="40" opacity="0.35"/></g>
+        <circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${ink}" stroke-width="20"/><circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${col('brass')}" stroke-width="12"/>`;
+    },
+    // One big pinned note with a few words on it. k pop-in.
+    stickyNote(x, y, k, text) {
+      if (k <= 0) return '';
+      const ink = col('ink');
+      return `<g transform="translate(${f(x)} ${f(y)}) rotate(-4) scale(${f(k)})"><rect x="-58" y="-34" width="116" height="84" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        ${txt(0, 22, text, 40, ink)}<circle cx="0" cy="-30" r="8" fill="${col('live')}" stroke="${ink}" stroke-width="${lw('base')}"/></g>`;
+    },
+    // Small chat bubble with a tail pointing down-left. k pop-in.
+    chatBubble(x, y, k, text) {
+      if (k <= 0) return '';
+      const ink = col('ink'), size = 30, w = textWidth(text, size, TK.font.hand) + 36;
+      return `<g transform="translate(${f(x)} ${f(y)}) scale(${f(k)})"><path d="M${f(-w / 2)} -28 Q${f(-w / 2)} -44 ${f(-w / 2 + 16)} -44 L${f(w / 2 - 16)} -44 Q${f(w / 2)} -44 ${f(w / 2)} -28 L${f(w / 2)} 0 Q${f(w / 2)} 16 ${f(w / 2 - 16)} 16 L-10 16 L-26 36 L-24 16 L${f(-w / 2 + 16)} 16 Q${f(-w / 2)} 16 ${f(-w / 2)} 0 Z" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('heavy')}" stroke-linejoin="round"/>
+        ${txt(0, 0, text, size, ink)}</g>`;
+    },
+    sparkle(x, y, p, s = 1) {
+      if (p <= 0 || p >= 1) return '';
+      const k = Math.sin(p * Math.PI) * s;
+      return `<g transform="translate(${f(x)} ${f(y)}) scale(${f(k)}) rotate(${f(p * 90)})"><path d="M0 -24 L5 -5 L24 0 L5 5 L0 24 L-5 5 L-24 0 L-5 -5 Z" fill="${col('paper')}" stroke="${col('brass')}" stroke-width="${lw('base')}"/></g>`;
+    },
+    // Split-screen divider at x.
+    divider(x) { return `<rect x="${f(x - 5)}" y="0" width="10" height="${H}" fill="${col('ink')}"/><rect x="${f(x - 2)}" y="0" width="4" height="${H}" fill="${col('brass')}"/>`; },
+    // The mouse. o: x,y (feet),s,t,run (phase or null),flip
+    mouse(o) {
+      const ink = col('ink'), run = o.run, legs = run != null ? Math.sin(run * Math.PI * 2) * 10 : 0, bob = run != null ? -Math.abs(Math.sin(run * Math.PI * 2)) * 6 : 0;
+      const fl = o.flip ? -1 : 1;
+      return `<g transform="translate(${f(o.x)} ${f(o.y + bob)}) scale(${f(o.s * fl)} ${f(o.s)})">
+        <path d="M-40 -20 Q-80 -30 -96 -60" fill="none" stroke="${ink}" stroke-width="${lw('heavy')}" stroke-linecap="round"/>
+        <line x1="-16" y1="-8" x2="${f(-20 + legs)}" y2="0" stroke="${ink}" stroke-width="${lw('heavy')}" stroke-linecap="round"/><line x1="14" y1="-8" x2="${f(18 - legs)}" y2="0" stroke="${ink}" stroke-width="${lw('heavy')}" stroke-linecap="round"/>
+        <ellipse cx="0" cy="-22" rx="44" ry="22" fill="${col('mouse')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        <circle cx="22" cy="-46" r="14" fill="${col('mouse')}" stroke="${ink}" stroke-width="${lw('base')}"/><circle cx="22" cy="-46" r="7" fill="${col('mouseEar')}"/>
+        <path d="M30 -34 Q58 -30 62 -22 Q50 -10 30 -12 Z" fill="${col('mouse')}" stroke="${ink}" stroke-width="${lw('base')}" stroke-linejoin="round"/>
+        <circle cx="62" cy="-22" r="4" fill="${ink}"/><circle cx="42" cy="-28" r="3.4" fill="${ink}"/>
+        <path d="M58 -24 l14 -6 M58 -20 l15 2" stroke="${ink}" stroke-width="1.5"/></g>`;
     },
 
     // ---- network chrome ----
