@@ -23,6 +23,7 @@ registerTheme('pirate-flat', {
       chyronRope: '#8A6A3A', chyronRopeHi: '#C7A86A', chyronSub: '#5A4A30',
       shadow: '#1E2430', vignette: '#2B1A0A', fleck: '#3A2A18', liveText: '#FFFDF6',
       lyric: '#F3E9D2', lyricShout: '#C9A043', lyricOutline: '#122340',
+      land: '#9DB38A', landDark: '#6E8B5A', windowLit: '#F6D77A',
     },
     // Bot color variants, cycled by index.
     bots: [
@@ -39,7 +40,7 @@ registerTheme('pirate-flat', {
     ticker: { speed: 95, size: 25 },
     // Sepia matrix for flashbacks (feColorMatrix values).
     flashback: '0.393 0.769 0.189 0 0  0.349 0.686 0.168 0 0  0.272 0.534 0.131 0 0  0 0 0 1 0',
-    copy: { clunk: 'CLUNK!', network: 'PNN', networkFull: 'PIRATE NEWS NETWORK', liveFrom: 'LIVE FROM THE HIGH SEAS', masthead: 'The High Seas Herald', earlier: 'Earlier...', live: 'LIVE', replay: 'REPLAY' },
+    copy: { clunk: 'CLUNK!', creak: 'CREAK...', network: 'PNN', networkFull: 'PIRATE NEWS NETWORK', liveFrom: 'LIVE FROM THE HIGH SEAS', masthead: 'The High Seas Herald', earlier: 'Earlier...', live: 'LIVE', replay: 'REPLAY' },
   },
   rigs: {
     // ---- shared <defs>, rebuilt from tokens ----
@@ -52,7 +53,7 @@ registerTheme('pirate-flat', {
     // ---- characters ----
     // o: x,y,s,t,variant,phase,sway(deg),tankard,sing,walk(phase|null),whistle,flip,shrug(0..1),look(px),frown,
     //    stomp (0..1 leg lift), stompSide (1 right leg, -1 left), squash (0..1, impact),
-    //    armsUp (0..1 overhead), barbell (draws one in the hands), lean (deg, torso about the hips), legRot (deg)
+    //    armsUp (0..1 overhead), barbell (draws one in the hands), lean (deg, torso about the hips), legRot (deg), backpack
     bot(o) {
       const v = TK.bots[(o.variant || 0) % TK.bots.length], M = TK.motion, ink = col('ink');
       const t = o.t, ph = o.phase || 0, b = beat(t) + ph;
@@ -113,8 +114,10 @@ registerTheme('pirate-flat', {
       const body = `
     ${leg(-7, legA + lr)}${leg(7, legB + lr)}
     <g transform="rotate(${f(o.lean || 0)} 0 -24)">
+    ${o.backpack ? `<rect x="-34" y="-64" width="20" height="34" rx="6" fill="${col('rust')}" stroke="${ink}" stroke-width="${lw('thin')}"/><rect x="-36" y="-50" width="10" height="12" rx="3" fill="${col('brass')}" stroke="${ink}" stroke-width="${lw('fine')}"/>` : ''}
     <rect x="-22" y="-66" width="44" height="44" rx="${S.bodyCorner}" fill="${col('cream')}" stroke="${ink}" stroke-width="${lw('base')}"/>
     <rect x="-19" y="-58" width="38" height="5" fill="${v.stripe}"/><rect x="-19" y="-47" width="38" height="5" fill="${v.stripe}"/><rect x="-19" y="-36" width="38" height="5" fill="${v.stripe}"/>
+    ${o.backpack ? `<path d="M-20 -62 L14 -30" stroke="${col('rust')}" stroke-width="${lw('heavy')}" stroke-linecap="round"/>` : ''}
     ${armL}${armR}
     <rect x="-6" y="-73" width="12" height="8" fill="${col('metalDark')}" stroke="${ink}" stroke-width="${lw('fine')}"/>
     <g transform="translate(0 ${f(-sh * 4)})">
@@ -218,7 +221,7 @@ registerTheme('pirate-flat', {
     ${label}
   </g>`;
     },
-    // o: x,y(waterline),s,hole(scale),door(0..1 open|undefined),label
+    // o: x,y(waterline),s,hole(scale),door(0..1 open|undefined),label,t, peek (eyes in the hole), doorPeek (eyes in the doorway)
     lifeboat(o) {
       const ink = col('ink'), hole = o.hole || 1;
       let door = '';
@@ -226,14 +229,14 @@ registerTheme('pirate-flat', {
         const open = o.door;
         door = `<rect x="-118" y="-74" width="44" height="66" rx="3" fill="${ink}"/>
       <path d="M-118 -74 L${f(-118 - 40 * open)} ${f(-80 - 6 * open)} L${f(-118 - 40 * open)} ${f(-2 + 6 * open)} L-118 -8 Z" fill="${col('woodLight')}" stroke="${ink}" stroke-width="${lw('mid')}" stroke-linejoin="round"/>
-      <circle cx="${f(-118 - 32 * open)}" cy="-40" r="3.5" fill="${col('brass')}"/>`;
+      <circle cx="${f(-118 - 32 * open)}" cy="-40" r="3.5" fill="${col('brass')}"/>${o.doorPeek ? R.peekEyes(-96, -44, o.doorPeek, o.t || 0, 1) : ''}`;
       }
       return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${o.s || 1})">
     <path d="M-170 -96 L170 -96 Q160 -10 120 0 L-130 0 Q-165 -20 -170 -96 Z" fill="${col('boatHull')}" stroke="${ink}" stroke-width="${lw('bold')}" stroke-linejoin="round"/>
     <path d="M-168 -80 L168 -80" stroke="${col('rust')}" stroke-width="10"/>
     <rect x="-176" y="-106" width="352" height="14" rx="5" fill="${col('woodDark')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
     ${txt(10, -36, o.label || '', fitSize(o.label || '', 40, TK.font.display, 150), col('navy'), { font: TK.font.display })}
-    <g transform="translate(118 -40) scale(${f(hole)})"><path d="M-22 -18 l10 -8 l8 6 l12 -6 l10 10 l-4 12 l8 10 l-12 10 l-10 -6 l-12 8 l-10 -10 l2 -12 z" fill="${ink}"/></g>
+    <g transform="translate(118 -40) scale(${f(hole)})"><path d="M-22 -18 l10 -8 l8 6 l12 -6 l10 10 l-4 12 l8 10 l-12 10 l-10 -6 l-12 8 l-10 -10 l2 -12 z" fill="${ink}"/>${o.peek ? R.peekEyes(-2, -2, o.peek, o.t || 0, 0.7) : ''}</g>
     ${door}
   </g>`;
     },
@@ -568,6 +571,147 @@ registerTheme('pirate-flat', {
     panelKnob(o, i, off) {
       const n = o.levers.length, cx = -300 * (n - 1) / 2 + i * 300, a = lerp(-90, 30, clamp(off)) * Math.PI / 180;
       return { x: o.x + o.s * (cx + Math.cos(a) * 130), y: o.y + o.s * (150 + Math.sin(a) * 130) };
+    },
+
+    // ---- verse 2 ----
+    // Two eyes peering out of a dark gap. k 0..1 pops them open; they glance around and blink.
+    peekEyes(x, y, k, t, s = 1) {
+      if (k <= 0) return '';
+      const ink = col('ink'), look = Math.sin(t * 2.3) * 2.5, blink = (t % 2.7) < 0.12 ? 0.15 : 1, ry = 6 * k * blink;
+      return `<g transform="translate(${f(x)} ${f(y)}) scale(${f(s)})">${[-8, 8].map(dx => `<ellipse cx="${dx}" cy="0" rx="6" ry="${f(ry)}" fill="${col('paper')}"/><circle cx="${f(dx + look)}" cy="1" r="${f(2.6 * k * blink)}" fill="${ink}"/>`).join('')}</g>`;
+    },
+    // Signpost planted at x,y (base). o: x,y,s,text,tilt
+    signpost(o) {
+      const ink = col('ink'), size = fitSize(o.text, 44, TK.font.display, 280), bw = textWidth(o.text, size, TK.font.display) + 54;
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) rotate(${f(o.tilt || 0)}) scale(${f(o.s)})">
+        <rect x="-8" y="-170" width="16" height="170" fill="${col('woodDark')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        <rect x="${f(-bw / 2 + 6)}" y="-226" width="${f(bw)}" height="70" rx="6" fill="${col('shadow')}" opacity="0.3"/>
+        <rect x="${f(-bw / 2)}" y="-232" width="${f(bw)}" height="70" rx="6" fill="${col('parch')}" stroke="${ink}" stroke-width="${lw('bold')}"/>
+        ${[-1, 1].map(m => `<circle cx="${f(m * (bw / 2 - 16))}" cy="-197" r="4" fill="${col('iron')}"/>`).join('')}
+        ${txt(0, -182, o.text, size, col('live'), { font: TK.font.display, stroke: ink, sw: lw('fine') })}</g>`;
+    },
+    // Pier at waterline y, from x0 to x1, deck at y - h.
+    dock(x0, x1, y, h = 40) {
+      const ink = col('ink');
+      let s = '';
+      for (let x = x0 + 30; x < x1; x += 110) s += `<rect x="${x - 9}" y="${y - h}" width="18" height="${h + 60}" fill="${col('woodDark')}" stroke="${ink}" stroke-width="${lw('base')}"/>`;
+      s += `<rect x="${x0}" y="${y - h - 18}" width="${x1 - x0}" height="22" fill="${col('wood')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>`;
+      for (let x = x0 + 40; x < x1; x += 40) s += `<line x1="${x}" y1="${y - h - 18}" x2="${x}" y2="${y - h + 4}" stroke="${col('woodSeam')}" stroke-width="${lw('fine')}"/>`;
+      return s;
+    },
+    // Supply shack on the dock. o: x,y (floor),s,label,offline (0 off .. 1 on),t. Switch box on the right wall.
+    shack(o) {
+      const ink = col('ink'), on = clamp(o.offline || 0), a = lerp(40, -40, on) * Math.PI / 180;
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})">
+        <rect x="-130" y="-190" width="260" height="190" fill="${col('wood')}" stroke="${ink}" stroke-width="${lw('bold')}"/>
+        ${[-86, -42, 2, 46, 90].map(x => `<line x1="${x}" y1="-186" x2="${x}" y2="-4" stroke="${col('woodSeam')}" stroke-width="${lw('base')}"/>`).join('')}
+        <path d="M-156 -186 L0 -276 L156 -186 Z" fill="${col('rust')}" stroke="${ink}" stroke-width="${lw('bold')}" stroke-linejoin="round"/>
+        <rect x="-96" y="-120" width="70" height="120" rx="4" fill="${col('woodDark')}" stroke="${ink}" stroke-width="${lw('heavy')}"/><circle cx="-38" cy="-60" r="5" fill="${col('brass')}"/>
+        <rect x="-110" y="-176" width="220" height="40" rx="4" fill="${col('parch')}" stroke="${ink}" stroke-width="${lw('base')}"/>
+        ${txt(0, -147, o.label || '', fitSize(o.label || '', 30, TK.font.display, 200), ink, { font: TK.font.display })}
+        <g transform="translate(64 -70)"><rect x="-30" y="-40" width="60" height="80" rx="6" fill="${col('metal')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+          <line x1="0" y1="0" x2="${f(Math.sin(a) * 30)}" y2="${f(Math.cos(a) * 30)}" stroke="${ink}" stroke-width="10" stroke-linecap="round"/>
+          <circle cx="${f(Math.sin(a) * 30)}" cy="${f(Math.cos(a) * 30)}" r="8" fill="${col('live')}" stroke="${ink}" stroke-width="${lw('base')}"/><circle r="7" fill="${col('iron')}"/></g>
+      </g>`;
+    },
+    shackSwitchPos(o) { return { x: o.x + 64 * o.s, y: o.y - 70 * o.s }; },
+    // The far shore. o: x,y (waterline),s,label,t
+    internetShore(o) {
+      const ink = col('ink'), blink = (o.t % 1) < 0.5;
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})">
+        <path d="M-260 10 Q-200 -150 0 -170 Q220 -180 320 10 Z" fill="${col('land')}" stroke="${ink}" stroke-width="${lw('bold')}" stroke-linejoin="round"/>
+        <path d="M-180 -40 Q-60 -80 60 -70" fill="none" stroke="${col('landDark')}" stroke-width="${lw('base')}"/>
+        ${[[-120, 70, 60], [-40, 50, 90], [30, 60, 70], [110, 46, 110]].map(([x, w, h]) => `<rect x="${x}" y="${-150 - h + 20}" width="${w}" height="${h}" fill="${col('cream')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+          ${[0, 1].map(r => `<rect x="${x + 10}" y="${-150 - h + 34 + r * 26}" width="${w - 20}" height="10" fill="${col('navy')}"/>`).join('')}`).join('')}
+        <line x1="188" y1="-150" x2="188" y2="-262" stroke="${ink}" stroke-width="${lw('heavy')}"/><path d="M172 -150 L188 -230 L204 -150" fill="none" stroke="${ink}" stroke-width="${lw('base')}"/>
+        <circle cx="188" cy="-266" r="7" fill="${blink ? col('live') : col('iron')}" stroke="${ink}" stroke-width="${lw('fine')}"/>
+        <g transform="translate(-10 -16)"><rect x="-120" y="-24" width="240" height="44" rx="5" fill="${col('parch')}" stroke="${ink}" stroke-width="${lw('base')}"/>
+        ${txt(0, 9, o.label || '', fitSize(o.label || '', 32, TK.font.display, 220), ink, { font: TK.font.display })}</g></g>`;
+    },
+    // Rope along a quadratic curve (tow lines, mooring lines).
+    towline(x1, y1, cx, cy, x2, y2) {
+      return `<path d="M${f(x1)} ${f(y1)} Q${f(cx)} ${f(cy)} ${f(x2)} ${f(y2)}" fill="none" stroke="${col('rope')}" stroke-width="${lw('bold')}"/>`;
+    },
+    // Gangplank with a sagging rope above it, from (x1,y1) to (x2,y2).
+    gangplank(x1, y1, x2, y2) {
+      const ink = col('ink');
+      let s = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${ink}" stroke-width="20" stroke-linecap="round"/><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col('woodLight')}" stroke-width="13" stroke-linecap="round"/>`;
+      for (let i = 1; i < 14; i++) { const u = i / 14, x = lerp(x1, x2, u), y = lerp(y1, y2, u); s += `<line x1="${f(x)}" y1="${f(y - 6)}" x2="${f(x)}" y2="${f(y + 6)}" stroke="${col('woodSeam')}" stroke-width="${lw('fine')}"/>`; }
+      s += `<path d="M${x1} ${y1 - 70} Q${f((x1 + x2) / 2)} ${f((y1 + y2) / 2 - 10)} ${x2} ${y2 - 70}" fill="none" stroke="${col('rope')}" stroke-width="${lw('bold')}"/>`;
+      return s;
+    },
+    // Callout box with a leader line to an anchor. o: x,y (box center),ax,ay,k (pop),lines [{s, hot}], hot lines flash with t
+    callout(o) {
+      if (o.k <= 0) return '';
+      const ink = col('ink'), size = 34, wd = Math.max(...o.lines.map(l => textWidth(l.s, size, TK.font.display))) + 50, h = o.lines.length * 42 + 22;
+      const on = (o.t % 0.5) < 0.32;
+      const body = o.lines.map((l, i) => txt(0, -h / 2 + 46 + i * 42, l.s, size, l.hot ? (on ? col('live') : col('rust')) : ink, { font: TK.font.display })).join('');
+      return `<line x1="${f(o.ax)}" y1="${f(o.ay)}" x2="${f(lerp(o.ax, o.x, o.k))}" y2="${f(lerp(o.ay, o.y, o.k))}" stroke="${ink}" stroke-width="${lw('base')}" stroke-dasharray="8 6"/>
+        <circle cx="${f(o.ax)}" cy="${f(o.ay)}" r="44" fill="none" stroke="${col('live')}" stroke-width="${lw('heavy')}" opacity="${f(o.k)}"/>
+        <g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.k)})"><rect x="${f(-wd / 2 + 6)}" y="${f(-h / 2 + 6)}" width="${f(wd)}" height="${h}" rx="8" fill="${col('shadow')}" opacity="0.3"/>
+        <rect x="${f(-wd / 2)}" y="${f(-h / 2)}" width="${f(wd)}" height="${h}" rx="8" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('bold')}"/>${body}</g>`;
+    },
+    // The unsanctioned message board. o: x,y (top center),s,title,notes (how many pinned),t. Layout is fixed so notes stay put.
+    noticeBoard(o) {
+      const ink = col('ink'), cols = 14, rows = 7, bw = 700, bh = 330;
+      let s = `<rect x="${-bw / 2 + 8}" y="8" width="${bw}" height="${bh}" rx="8" fill="${col('shadow')}" opacity="0.3"/>
+        <rect x="${-bw / 2}" y="0" width="${bw}" height="${bh}" rx="8" fill="${col('woodDark')}" stroke="${ink}" stroke-width="${lw('bold')}"/>
+        <rect x="${-bw / 2 + 16}" y="52" width="${bw - 32}" height="${bh - 68}" rx="4" fill="${col('parchDark')}" stroke="${ink}" stroke-width="${lw('base')}"/>
+        <rect x="-150" y="10" width="300" height="36" rx="4" fill="${col('parch')}" stroke="${ink}" stroke-width="${lw('base')}"/>
+        ${txt(0, 37, o.title || '', fitSize(o.title || '', 28, TK.font.display, 280), ink, { font: TK.font.display })}`;
+      const n = Math.floor(o.notes || 0);
+      for (let i = 0; i < Math.min(n, cols * rows); i++) {
+        const r = rnd(i * 3.7 + 1), c = i % cols, rw = Math.floor(i / cols);
+        const x = -bw / 2 + 44 + c * 47 + (rnd(i * 1.3) - 0.5) * 14, y = 74 + rw * 36 + (rnd(i * 2.9) - 0.5) * 10, rot = (r - 0.5) * 18;
+        s += `<g transform="translate(${f(x)} ${f(y)}) rotate(${f(rot)})"><rect x="-17" y="-12" width="34" height="28" fill="${r > 0.8 ? col('cream') : col('paper')}" stroke="${ink}" stroke-width="${lw('fine')}"/>
+          <line x1="-11" y1="0" x2="${f(-11 + 16 + r * 6)}" y2="0" stroke="${col('newsLine')}" stroke-width="2"/><line x1="-11" y1="7" x2="${f(-11 + 10 + r * 10)}" y2="7" stroke="${col('newsLine')}" stroke-width="2"/>
+          <circle cx="0" cy="-10" r="3.5" fill="${col('live')}" stroke="${ink}" stroke-width="1"/></g>`;
+      }
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})">${s}</g>`;
+    },
+    // Network-style count badge. o: x,y (right edge, top),value,k (pop)
+    counter(o) {
+      if ((o.k ?? 1) <= 0) return '';
+      const ink = col('ink'), v = Math.round(o.value).toLocaleString('en-US'), size = 46, wd = Math.max(150, textWidth(v, size, TK.font.display) + 44);
+      return `<g transform="translate(${f(o.x - wd)} ${f(o.y)}) scale(${f(o.k ?? 1)})"><rect x="5" y="5" width="${f(wd)}" height="60" rx="8" fill="${col('shadow')}" opacity="0.3"/>
+        <rect width="${f(wd)}" height="60" rx="8" fill="${col('live')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        ${txt(wd / 2, 45, v, size, col('liveText'), { font: TK.font.display })}</g>`;
+    },
+    // Harbor town on the far shore. o: x,y (waterline),s,label,t,night (0..1),window (0..1 one window lit)
+    harborTown(o) {
+      const ink = col('ink'), nt = o.night || 0;
+      const house = (x, w, h, roof) => `<rect x="${x}" y="${-h}" width="${w}" height="${h}" fill="${col('cream')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        <path d="M${x - 10} ${-h} L${x + w / 2} ${-h - w * 0.55} L${x + w + 10} ${-h} Z" fill="${roof}" stroke="${ink}" stroke-width="${lw('heavy')}" stroke-linejoin="round"/>
+        <rect x="${x + w / 2 - 12}" y="${-h + 26}" width="24" height="24" fill="${col('navy')}" stroke="${ink}" stroke-width="${lw('thin')}"/>`;
+      let s = `<rect x="-280" y="-18" width="560" height="30" fill="${col('wood')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>`;
+      s += house(-240, 110, 130, col('rust')) + house(-110, 130, 180, col('navy')) + house(40, 100, 120, col('brassDark')) + house(160, 90, 150, col('rust'));
+      s += `<g transform="translate(0 -18)"><rect x="-150" y="-32" width="300" height="46" rx="5" fill="${col('parch')}" stroke="${ink}" stroke-width="${lw('base')}"/>
+        ${txt(0, 2, o.label || '', fitSize(o.label || '', 34, TK.font.display, 280), ink, { font: TK.font.display })}</g>`;
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})">${s}</g>`;
+    },
+    // Open ledger with tally marks in groups of five. o: x,y (center),s,title,marks (fractional draws the next stroke)
+    ledger(o) {
+      const ink = col('ink'), m = o.marks || 0;
+      let s = `<rect x="-424" y="-232" width="860" height="478" rx="10" fill="${col('shadow')}" opacity="0.3"/>
+        <rect x="-430" y="-240" width="860" height="480" rx="10" fill="${col('rust')}" stroke="${ink}" stroke-width="${lw('bold')}"/>
+        <path d="M-410 -224 L-6 -214 L-6 224 L-410 220 Z" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        <path d="M410 -224 L6 -214 L6 224 L410 220 Z" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        <line x1="0" y1="-218" x2="0" y2="224" stroke="${ink}" stroke-width="${lw('heavy')}"/>
+        ${txt(-208, -164, o.title || '', fitSize(o.title || '', 44, TK.font.display, 340), ink, { font: TK.font.display })}
+        <line x1="-380" y1="-140" x2="-36" y2="-140" stroke="${ink}" stroke-width="${lw('base')}"/>`;
+      for (let r = 0; r < 7; r++) for (const side of [-1, 1]) { const y = -96 + r * 46; if (side < 0 && r > 5) continue; s += `<line x1="${side < 0 ? -380 : 36}" y1="${y + 14}" x2="${side < 0 ? -36 : 380}" y2="${y + 14}" stroke="${col('newsLine')}" stroke-width="${lw('fine')}"/>`; }
+      // slots: left page 6 rows, then right page 7 rows; 6 groups per row
+      const slots = [];
+      for (let r = 0; r < 6; r++) slots.push([-370, -96 + r * 46]);
+      for (let r = 0; r < 7; r++) slots.push([46, -96 + r * 46]);
+      for (let i = 0; i < Math.ceil(m); i++) {
+        const g = Math.floor(i / 5), k = i % 5, row = Math.floor(g / 6), col6 = g % 6;
+        if (row >= slots.length) break;
+        const [sx, sy] = slots[row], gx = sx + col6 * 56, p = clamp(m - i);
+        if (k < 4) { const x = gx + k * 9; s += `<line x1="${x}" y1="${sy - 14}" x2="${x}" y2="${f(sy - 14 + 30 * p)}" stroke="${ink}" stroke-width="${lw('mid')}" stroke-linecap="round"/>`; }
+        else s += `<line x1="${gx - 6}" y1="${sy + 10}" x2="${f(gx - 6 + 42 * p)}" y2="${f(sy + 10 - 22 * p)}" stroke="${col('live')}" stroke-width="${lw('mid')}" stroke-linecap="round"/>`;
+      }
+      return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})">${s}</g>`;
     },
 
     // ---- network chrome ----

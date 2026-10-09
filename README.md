@@ -81,7 +81,7 @@ Check a theme with `--stills` before rendering video. Label boxes size to their 
 - `lyrics`: `size, shoutSize, stroke, shoutStroke, y, lineGap`.
 - `ticker`: `speed, size`.
 - `flashback`: feColorMatrix values for flashbacks (sepia by default).
-- `copy`: theme flavor text: `clunk, network, networkFull, liveFrom, masthead, earlier, live, replay`. Scenes read it with `copy(k)`. Story text lives in `SONG.labels` and `SONG.headlines`, not here.
+- `copy`: theme flavor text: `clunk, creak, network, networkFull, liveFrom, masthead, earlier, live, replay`. Scenes read it with `copy(k)`. Story text lives in `SONG.labels` and `SONG.headlines`, not here.
 
 ## Theme contract (rigs every theme must provide)
 
@@ -90,11 +90,11 @@ Inherited from `pirate-flat` unless overridden. `t` is song time in seconds, `lt
 | Rig | Inputs |
 |---|---|
 | `defs()` | returns `<defs>` content; must define `#sky`, `#vig`, `#flashback` |
-| `bot(o)` | `x, y` (feet), `s`, `t`, `variant, phase, sway, tankard, sing, walk, whistle, flip, shrug, look, frown, stomp (0 to 1 leg kick), stompSide (1 right, -1 left), squash (0 to 1), armsUp (0 to 1 overhead), barbell, lean (torso degrees about the hips), legRot (degrees)` |
+| `bot(o)` | `x, y` (feet), `s`, `t`, `variant, phase, sway, tankard, sing, walk, whistle, flip, shrug, look, frown, stomp (0 to 1 leg kick), stompSide (1 right, -1 left), squash (0 to 1), armsUp (0 to 1 overhead), barbell, lean (torso degrees about the hips), legRot (degrees), backpack` |
 | `hand(o)` | `x, y, s, rot, curl (0 flat to 1 gripping), label` (on the badge); the sleeve must run off frame |
 | `cannon(o)` | `x, y, s, angle, fire (seconds since firing or null), label` |
 | `cannonball(x, y)` | |
-| `lifeboat(o)` | `x, y (waterline), s, hole, door (0 to 1 open, optional), label` |
+| `lifeboat(o)` | `x, y (waterline), s, hole, door (0 to 1 open, optional), label, t, peek (eyes in the hole), doorPeek (eyes in the doorway)` |
 | `newspaper(o)` | `headline`; drawn centered at 0,0; the scene adds the spin |
 | `speechBubble(x, y, k, text)` | `k` = pop-in scale |
 | `deck(t)` | full-frame ship-deck set |
@@ -118,6 +118,18 @@ Inherited from `pirate-flat` unless overridden. `t` is song time in seconds, `lt
 | `cabinWall(t)` | full-frame ship's cabin wall |
 | `controlPanel(o)` | lever panel: `x, y, s, levers: [{label, off (0 to 1), lamp (0 to 1)}]`; long labels wrap to two lines |
 | `panelKnob(o, i, off)` | screen position of lever `i`'s knob, so a scene can put the hand on it |
+| `peekEyes(x, y, k, t, s)` | eyes looking out of a dark gap |
+| `signpost(o)` | sign on a post: `x, y (base), s, text, tilt` |
+| `dock(x0, x1, y, h)` | pier with pilings; deck at `y - h` |
+| `shack(o)`, `shackSwitchPos(o)` | supply shack with a wall switch: `x, y (floor), s, label, offline (0 to 1)`; switch position for callouts |
+| `internetShore(o)` | the far shore with buildings and a blinking mast: `x, y (waterline), s, label, t` |
+| `towline(x1, y1, cx, cy, x2, y2)` | rope along a curve |
+| `gangplank(x1, y1, x2, y2)` | plank with a sagging rope above it |
+| `callout(o)` | box with a dashed leader to a circled anchor: `x, y, ax, ay, k, t, lines: [{s, hot}]`; hot lines blink |
+| `noticeBoard(o)` | the message board: `x, y (top center), s, title, notes (count pinned), t`; note layout is fixed |
+| `counter(o)` | red count badge: `x (right edge), y, value, k`; formats 1,200 |
+| `harborTown(o)` | harbor town: `x, y (waterline), s, label, t, night (0 to 1)` |
+| `ledger(o)` | open ledger with tally marks: `x, y, s, title, marks` (fractional marks draw the next stroke) |
 
 Lyric lines may set `reserve: true` so words that have not appeared yet still hold their space (the count-in uses it; the chorus does not).
 Shots may set `chrome: false` to hide the LIVE tag, bug and ticker (the cold open does). The chrome slides in at I-2.
@@ -152,7 +164,8 @@ Claude can't listen, so EST times are located from the audio and then confirmed 
 | Intro | I-1, I-3, I-2 | approved |
 | Chorus 1 and 2 | C-1 to C-6 | approved; C-3 arm comes in from the side; Chorus 2 times confirmed by ear |
 | Verse 1 | V1-1 to V1-4 | approved; V1-3/V1-4 cut moved to 25.37; sign drop and clunks set by ear |
-| Verse 2 | V2-1 to V2-6 | next |
+| Verse 2 | V2-1 to V2-6 | approved |
+| Verse 3 | V3-1 to V3-8 | next |
 | Everything else | | not started; build in song order |
 
 Times still marked EST in `timeline.js` should be checked by ear as their sections are built.

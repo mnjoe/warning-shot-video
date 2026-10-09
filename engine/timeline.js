@@ -9,6 +9,7 @@ const SONG = {
     // Regions not built yet are unfitted: refit with the analysis in the README before relying on beat() there.
     anchors: [
       { from: 0, period: 0.49775, phase: 0.4875 },    // Intro, Verse 1, Chorus 1 (fitted 0 to 44.8)
+      { from: 44.6, period: 0.49725, phase: 0.5248 }, // Verse 2 (fitted 44.6 to 60; phase keeps the beat count continuous)
       { from: 97, period: 0.49775, phase: 0.470 },    // Chorus 2 (fitted 97 to 117)
     ],
   },
@@ -18,10 +19,14 @@ const SONG = {
     rogueHeadline: 'IT WENT ROGUE!', biggest: '“The biggest in the field!”',
     gym: 'EXPLOITGYM', target: 'TARGET',
     levers: ['CLASSIFIERS', 'AUTO-REVIEW', 'CHAIN-OF-THOUGHT MONITOR'],
+    noInternet: 'NO INTERNET', artifactory: 'ARTIFACTORY', offlineMode: 'OFFLINE MODE:', off: 'OFF',
+    internet: 'THE INTERNET', board: 'MESSAGE BOARD', hf: 'HUGGING FACE', serverLog: 'SERVER LOG',
   },
+  counts: { board: 1200, trip: 700 },
   // Network headline banners (story text). Not speaker credits; those are chyrons.
   headlines: {
     safetyOff: 'SAFETY SYSTEMS TAKE THE DAY OFF',
+    counts: '1,200 ON THE BOARD • 700 ON THE FIELD TRIP',
   },
   chyrons: {
     benaich: ['NATHAN BENAICH', 'on the Hugging Face incident'],
@@ -56,6 +61,16 @@ const SONG = {
     clunks: [20.48, 22.55, 24.48],  // guitar hits, Joe's ear (beats 40.17, 44.32, 48.20); the third lands in the drum stop
     turn: 25.55, shrug: 26.35, huh: [26.85, 27.35],   // the kicks come back on "WORST" at 26.35
   },
+  verse2: {
+    // V2-1 sign, V2-2 shack, V2-3 door, V2-4 board, V2-5 field trip, V2-6 server log. V2-3 and V2-6 starts were EST in Part E.
+    cuts: [44.79, 47.79, 49.78, 51.76, 55.75, 57.70, 59.72],
+    // [l1, l2, l2b, l3, l3b, l4, l4b, end]; l2b, l3b, l4b are EST from vocal onsets
+    lyr: [44.57, 47.79, 49.74, 51.93, 53.71, 55.76, 57.68, 59.72],
+    signLand: 45.28,                // NO INTERNET sign lands (beat 90)
+    peek: 46.75,                    // eyes appear in the hole (beat 93)
+    creak: 49.95,                   // door starts to open
+    // drums stop 56.7 to 58.1 ("...and the server logged them there"); tallies scratch through it
+  },
   chorus: {
     // cuts: C-1..C-6 starts + end. fireAt: crowd shout. lyr: [l1, shout, l2, l3, l3b, l4, l5, l6, l6b, end]
     one: {
@@ -85,6 +100,17 @@ function verse1Lyrics(L) {
     two(l2, l3, 'Said, “Break into this target,', 'grab the flag, and bring it in!”', l2b),
     two(l3, l4, 'Then they switched off the classifiers,', 'they switched off the review,', l3b),
     two(l4, end, 'Unplugged the chain-of-thought monitor...', 'what’s the worst a bot could do?', l4b),
+  ];
+}
+
+function verse2Lyrics(L) {
+  const [l1, l2, l2b, l3, l3b, l4, l4b, end] = L;
+  const two = (a, b, s1, s2, at) => ({ a, b, lines: [[{ s: s1 }], Object.assign([{ s: s2 }], { at })] });
+  return [
+    { a: l1, b: l2, lines: [[{ s: '“No direct internet!” the safety story swore,' }]] },
+    two(l2, l3, 'But nobody set Artifactory offline,', 'and the sandbox had a door.', l2b),
+    two(l3, l4, 'Twelve hundred little agents', 'found a message board to share,', l3b),
+    two(l4, end, 'Seven hundred took the field trip,', 'and the server logged them there.', l4b),
   ];
 }
 

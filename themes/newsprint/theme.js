@@ -23,6 +23,7 @@ registerTheme('newsprint', {
       chyronRope: '#111111', chyronRopeHi: '#888888', chyronSub: '#444444',
       shadow: '#000000', vignette: '#000000', fleck: '#000000', liveText: '#FFFFFF',
       lyric: '#FFFFFF', lyricShout: '#D7141A', lyricOutline: '#111111',
+      land: '#BDBAB0', landDark: '#8A8F94', windowLit: '#F4F2EC',
     },
     bots: [
       { band: '#D7141A', head: '#C9CCCF', stripe: '#111111' },
