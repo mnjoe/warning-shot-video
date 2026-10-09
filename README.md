@@ -147,7 +147,7 @@ Inherited from `pirate-flat` unless overridden. `t` is song time in seconds, `lt
 | `rubble(o)` | pile of planks |
 | `heldBanner(o)` | cloth banner between two poles: `x, y, w, text, s, t` |
 | `corkboard(o)` | pins and tangled red string: `x, y, s, wipe (0 to 1)` |
-| `chatBubble(x, y, k, text)`, `sparkle(x, y, p, s)`, `divider(x)` | small bubbles, shine, split-screen line |
+| `chatBubble(x, y, k, text, tail)` (tail `'down'` or `'right'`), `sparkle(x, y, p, s)`, `divider(x)` | small bubbles, shine, split-screen line |
 | `mouse(o)` | `x, y, s, t, run, flip` |
 | `lantern(x, y, lit, t)`, `studioSet(t)`, `newsDesk(o)`, `pip(o)` | the PNN studio and picture-in-picture box |
 | `seagull(o)` | deadpan seagull in reading glasses: `x, y, s, t, talk, flip` |

@@ -888,11 +888,14 @@ registerTheme('pirate-flat', {
       return `<g transform="translate(${f(x)} ${f(y)}) rotate(-4) scale(${f(k)})"><rect x="${f(-w / 2)}" y="-34" width="${f(w)}" height="84" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('heavy')}"/>
         ${txt(0, 22, text, 40, ink)}<circle cx="0" cy="-30" r="8" fill="${col('live')}" stroke="${ink}" stroke-width="${lw('base')}"/></g>`;
     },
-    // Small chat bubble with a tail pointing down-left. k pop-in.
-    chatBubble(x, y, k, text) {
+    // Small chat bubble. k pop-in. tail: 'down' (down-left, the default) or 'right' (points at a speaker to the right).
+    chatBubble(x, y, k, text, tail = 'down') {
       if (k <= 0) return '';
-      const ink = col('ink'), size = 30, w = textWidth(text, size, TK.font.hand) + 36;
-      return `<g transform="translate(${f(x)} ${f(y)}) scale(${f(k)})"><path d="M${f(-w / 2)} -28 Q${f(-w / 2)} -44 ${f(-w / 2 + 16)} -44 L${f(w / 2 - 16)} -44 Q${f(w / 2)} -44 ${f(w / 2)} -28 L${f(w / 2)} 0 Q${f(w / 2)} 16 ${f(w / 2 - 16)} 16 L-10 16 L-26 36 L-24 16 L${f(-w / 2 + 16)} 16 Q${f(-w / 2)} 16 ${f(-w / 2)} 0 Z" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('heavy')}" stroke-linejoin="round"/>
+      const ink = col('ink'), size = 30, w = textWidth(text, size, TK.font.hand) + 36, hw = w / 2;
+      const d = tail === 'right'
+        ? `M${f(-hw)} -28 Q${f(-hw)} -44 ${f(-hw + 16)} -44 L${f(hw - 16)} -44 Q${f(hw)} -44 ${f(hw)} -28 L${f(hw)} -22 L${f(hw + 30)} -12 L${f(hw)} -4 L${f(hw)} 0 Q${f(hw)} 16 ${f(hw - 16)} 16 L${f(-hw + 16)} 16 Q${f(-hw)} 16 ${f(-hw)} 0 Z`
+        : `M${f(-hw)} -28 Q${f(-hw)} -44 ${f(-hw + 16)} -44 L${f(hw - 16)} -44 Q${f(hw)} -44 ${f(hw)} -28 L${f(hw)} 0 Q${f(hw)} 16 ${f(hw - 16)} 16 L-10 16 L-26 36 L-24 16 L${f(-hw + 16)} 16 Q${f(-hw)} 16 ${f(-hw)} 0 Z`;
+      return `<g transform="translate(${f(x)} ${f(y)}) scale(${f(k)})"><path d="${d}" fill="${col('paper')}" stroke="${ink}" stroke-width="${lw('heavy')}" stroke-linejoin="round"/>
         ${txt(0, 0, text, size, ink)}</g>`;
     },
     sparkle(x, y, p, s = 1) {

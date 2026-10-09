@@ -49,7 +49,7 @@ function shotWhoToTell(t, lt, S) {
   if (k > 0) {
     const gull = R.cabinWall(t) + R.seagull({ x: 140, y: 230, s: 1.15, t, talk: t > d && t < d + 0.6 });
     s += R.pip({ x: 930, y: 170, w: 300, h: 220, inner: gull, k, id: 'duh' });
-    s += R.chatBubble(820, 250, backOut(prog(t, d, d + 0.2)), SONG.labels.duh);
+    s += R.chatBubble(835, 290, backOut(prog(t, d, d + 0.2)), SONG.labels.duh, 'right');   // tail points at the seagull
   }
   return { svg: s };
 }
