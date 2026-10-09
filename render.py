@@ -16,6 +16,7 @@ ap.add_argument('--fps', type=int, default=30)
 ap.add_argument('--res', type=int, default=720, choices=[720, 1080])
 ap.add_argument('--audio', help='song MP3; muxes the matching slice under the video')
 ap.add_argument('--stills', help='comma-separated times; writes PNGs and a contact sheet instead of video')
+ap.add_argument('--debug', action='store_true', help='burn shot id, time and beat into a corner (review renders only)')
 ap.add_argument('--out', required=True)
 a = ap.parse_args()
 
@@ -35,7 +36,7 @@ with sync_playwright() as p:
         ts = [float(x) for x in a.stills.split(',')]
         files = []
         for t in ts:
-            sid = pg.evaluate(f'render({t})')
+            sid = pg.evaluate(f'render({t}, {str(a.debug).lower()})')
             fn = f'{a.out}_{t:07.2f}.png'; pg.screenshot(path=fn); files.append((fn, sid, t))
         cols = 2; rows = (len(files) + 1) // 2
         sheet = Image.new('RGB', (1280, 360 * rows), 'black')
@@ -52,7 +53,7 @@ with sync_playwright() as p:
                            '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-pix_fmt', 'yuv420p', silent], stdin=subprocess.PIPE)
     st = time.time()
     for i in range(n):
-        pg.evaluate(f'render({a.t0 + i / a.fps:.4f})')
+        pg.evaluate(f'render({a.t0 + i / a.fps:.4f}, {str(a.debug).lower()})')
         ff.stdin.write(pg.screenshot(type='jpeg', quality=92))
         if i % 150 == 0: print(f'{i}/{n} frames, {time.time() - st:.0f}s', flush=True)
     ff.stdin.close(); ff.wait()

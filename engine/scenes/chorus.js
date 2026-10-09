@@ -25,21 +25,26 @@ function shotDeck(t, lt, o) {
   return { svg: `<g transform="${shake}">${s}</g>` };
 }
 
-// C-3: flashback close-up. The gloved hand (US) loads the cannonball, then pats the barrel on the beat.
+// C-3: flashback close-up. The gloved hand (AI LAB) loads the cannonball, then pats the barrel on the beat.
 function shotLoad(t, lt, o) {
   let s = R.deck(t);
   const ang = -8, S = 2.0, cx = 430, cy = 470;
   const enter = easeOut(prog(lt, 0.0, 1.0)), push = ease(prog(lt, 1.0, 1.7)), back = ease(prog(lt, 1.9, 2.4));
   let hx = lerp(980, 470, enter) - push * 150 + back * 160;
   let hy = lerp(-260, -10, enter);
-  let pat = 0;
-  if (lt > 2.4) { const bp = ((beat(t) % 1) + 1) % 1; pat = lt < 3.9 ? Math.pow(Math.abs(Math.cos(bp * Math.PI)), 6) : 0; hx = 90; hy = lerp(-180, -122, pat); }
+  // Patting pose: the arm angles in from the right so the sleeve label stays clear of the two lyric lines.
+  let pat = 0, rot = 0;
+  if (lt > 2.4) {
+    const bp = ((beat(t) % 1) + 1) % 1, tr = ease(prog(lt, 2.4, 2.75));
+    pat = lt > 2.75 && lt < 3.9 ? Math.pow(Math.abs(Math.cos(bp * Math.PI)), 6) : 0;
+    hx = lerp(hx, 190, tr); hy = lerp(hy, lerp(-112, -80, pat), tr); rot = lerp(0, -12, tr);
+  }
   const ballIn = lt > 1.75;
   let ball = '';
   if (!ballIn) { const bx = lt > 1.0 ? Math.max(hx - 70, 240) : hx - 70; ball = R.cannonball(bx, hy + 6); }
   s += `<g transform="translate(${cx} ${cy}) rotate(${ang}) scale(${S})"><g transform="scale(${1 / S})">${ball}</g>${R.cannon({ x: 0, y: 0, s: 1, angle: 0, label: SONG.labels.cannon })}</g>`;
   const curl = lt > 1.75 && lt <= 2.4 ? 0.2 : (lt > 2.4 ? 0 : 1);
-  s += `<g transform="translate(${cx} ${cy}) rotate(${ang})">${R.hand({ x: hx, y: hy, s: 1.1, rot: lt > 2.4 ? -90 : 0, curl, label: SONG.labels.hand })}</g>`;
+  s += `<g transform="translate(${cx} ${cy}) rotate(${ang})">${R.hand({ x: hx, y: hy, s: 1.1, rot, curl, label: SONG.labels.hand })}</g>`;
   return { svg: R.flashback(t, s), live: 'replay' };
 }
 

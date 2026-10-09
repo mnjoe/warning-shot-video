@@ -15,7 +15,10 @@ The look is a swappable **theme**. The song's timing, lyrics and gags stay fixed
 python3 render.py --theme pirate-flat --stills 29,30.9,33.1,36.9,38.6,43 --out preview      # contact sheet
 python3 render.py --theme pirate-flat --from 27.86 --to 44.79 --audio song.mp3 --out chorus.mp4
 python3 render.py --theme newsprint --from 27.86 --to 44.79 --audio song.mp3 --out chorus-np.mp4 --res 1080
+python3 render.py --theme pirate-flat --from 0 --to 11.98 --audio song.mp3 --debug --out intro-test.mp4   # review render
 ```
+
+`--debug` burns the shot id, song time and beat number into the lower right so timing notes can be exact ("move V1-3 two frames later"). Use it for stills and test renders only, never for the final.
 
 Needs Python Playwright with Chromium, ffmpeg, and Pillow (all present in Claude's sandbox).
 Rendering runs at about 12 frames per second at 720p on one CPU. Render long spans in sections and join them with ffmpeg's concat.
@@ -25,11 +28,12 @@ Rendering runs at about 12 frames per second at 720p on one CPU. Render long spa
 ```
 engine/core.js          math, beat grid, theme loader, txt()/textWidth()/fitSize()
 engine/timeline.js      SONG: cut times, lyrics, labels, chyron names, ticker, beat anchors
-engine/scenes/*.js      choreography: what happens when; draws only through R.*
+engine/scenes/*.js      choreography: what happens when; draws only through R.* (intro.js, chorus.js, ...)
 engine/stage.html       shot list in song order + render(t)
 themes/<name>/theme.js  tokens + rigs (the look)
 themes/<name>/fonts/    font files and their licenses
-render.py               stills, contact sheets, video, audio mux
+render.py               stills, contact sheets, video, audio mux, --debug overlay
+tools/beatfit.py        fits beat-grid anchors, lists onsets, aligns repeated sections (see "Timing")
 ```
 
 | Layer | Changes between styled versions? |
@@ -44,7 +48,8 @@ render.py               stills, contact sheets, video, audio mux
 |---|---|
 | `pirate-flat` | The original look. Defines every token and every rig. |
 | `newsprint` | Token-only override: palette, fonts, line weight, bot head shape. |
-| `lab-glove` | Rig override: replaces only `hand()` (lab-coat sleeve, ID badge, blue nitrile glove, jointed fingers). Everything else inherited. |
+
+The humans' hand is a blue nitrile lab glove with a lab-coat sleeve and an ID badge, in `pirate-flat`. (An earlier brown work glove and the `lab-glove` demo theme were dropped; both are in git history.)
 
 Story words such as the hand's "AI LAB" label live in `SONG.labels` in `timeline.js`, not in a theme. Changing one changes it in every theme.
 
@@ -62,7 +67,7 @@ registerTheme('my-theme', {
 
 Tokens deep-merge, so you list only what changes. Fonts come from `raw.githubusercontent.com/google/fonts/main/...`; commit the font and its license file into `themes/<name>/fonts/`.
 
-**Different-looking characters or props:** add a `rigs` block that replaces just those functions, for example a new `bot(o)`. It must accept the same inputs (below). Every scene picks it up automatically.
+**Different-looking characters or props:** add a `rigs` block that replaces just those functions, for example a new `bot(o)` or `hand(o)`. It must accept the same inputs (below). Every scene picks it up automatically.
 
 Check a theme with `--stills` before rendering video. Label boxes size to their text with `fitSize()`, so wider fonts should not overflow. If one does, fix the rig, not the scene.
 
@@ -76,7 +81,7 @@ Check a theme with `--stills` before rendering video. Label boxes size to their 
 - `lyrics`: `size, shoutSize, stroke, shoutStroke, y, lineGap`.
 - `ticker`: `speed, size`.
 - `flashback`: feColorMatrix values for flashbacks (sepia by default).
-- `copy`: theme flavor text: `network, masthead, earlier, live, replay`. Story text lives in `SONG.labels`, not here.
+- `copy`: theme flavor text: `network, networkFull, liveFrom, masthead, earlier, live, replay`. Scenes read it with `copy(k)`. Story text lives in `SONG.labels` and `SONG.headlines`, not here.
 
 ## Theme contract (rigs every theme must provide)
 
@@ -85,8 +90,8 @@ Inherited from `pirate-flat` unless overridden. `t` is song time in seconds, `lt
 | Rig | Inputs |
 |---|---|
 | `defs()` | returns `<defs>` content; must define `#sky`, `#vig`, `#flashback` |
-| `bot(o)` | `x, y` (feet), `s`, `t`, `variant, phase, sway, tankard, sing, walk, whistle, flip, shrug, look, frown` |
-| `hand(o)` | `x, y, s, rot, curl (0 flat to 1 gripping), label` |
+| `bot(o)` | `x, y` (feet), `s`, `t`, `variant, phase, sway, tankard, sing, walk, whistle, flip, shrug, look, frown, stomp (0 to 1 leg kick), stompSide (1 right, -1 left), squash (0 to 1)` |
+| `hand(o)` | `x, y, s, rot, curl (0 flat to 1 gripping), label` (on the badge); the sleeve must run off frame |
 | `cannon(o)` | `x, y, s, angle, fire (seconds since firing or null), label` |
 | `cannonball(x, y)` | |
 | `lifeboat(o)` | `x, y (waterline), s, hole, door (0 to 1 open, optional), label` |
@@ -97,21 +102,48 @@ Inherited from `pirate-flat` unless overridden. `t` is song time in seconds, `lt
 | `flashback(t, svg)` | wraps a shot in the flashback treatment |
 | `sky, cloud, clouds, waves, seaRect, smokePuff, musicNote, ripple, dim` | environment helpers |
 | `liveTag(t, mode)`, `bug(t)`, `ticker(t, items, start)`, `chyron(lt, name, sub)`, `lyrics(t, entry)` | network chrome |
+| `headline(lt, text)` | network headline banner. Distinct from `chyron`: headlines are the network talking, chyrons credit a speaker |
+| `logoCard()` | full-frame parchment card for the logo sting (I-1) |
+| `networkLogo(o)` | big ship's-wheel logo: `x, y, s, spin, banner (0 to 1 unfurled), glint (0 to 1)` |
+| `scrollEdge(x)` | the rolled edge of the parchment wipe |
+| `dust(x, y, p, s)`, `impact(x, y, p, s)` | stomp dust and impact lines; `p` 0 to 1 over the effect |
+| `ship(o)` | full side view, bow right: `x, y (waterline), s, t, rot, label, crew (bots on deck), tow ({label, hole}), flag` |
+| `wake(t, x, y, len, s)` | foam trail astern |
+| `buoy(o)` | target buoy with flag: `x, y (waterline), s, t, label` |
+
+Lyric lines may set `reserve: true` so words that have not appeared yet still hold their space (the count-in uses it; the chorus does not).
+Shots may set `chrome: false` to hide the LIVE tag, bug and ticker (the cold open does). The chrome slides in at I-2.
 
 New scenes will add rigs (notice board, Artifactory shack, parrots, seagull, arcade cabinet and so on). Add each one to `pirate-flat` and to this table.
 
 ## Content rules (from the production notes)
 
 - No real people drawn. Real names appear only in chyrons. No company logos; plain-text labels only.
-- Ticker lines come only from items marked "Fact" in the known-vs-unknown note.
+- Ticker lines come only from items marked "Fact" in the known-vs-unknown note. The one exception is the opener, "Developing: something happened on a boat...", which asserts nothing.
+- Headline banners are network voice; speaker chyrons are only for quoted lines with a real source. The song's paraphrase of the eval task ("Break into this target...") gets no chyron.
 - The prompt gag must read as invented and carry a "dramatization" tag. Never use "complex attack paths" as prompt text.
 - Check every quote against its source link before publishing.
+
+## Timing
+
+The song runs at about 120.5 BPM (0.49775 s per beat), not the 123 in the production notes. Part E's cut times already sit on the real beats; only the old `beat()` anchors were off.
+Fit an anchor for each region as it gets built, so stomps, sways and pats land on the kicks:
+
+```bash
+python3 tools/beatfit.py song.mp3 fit 44.8 60          # -> { from: 44.8, period: ..., phase: ... }
+python3 tools/beatfit.py song.mp3 onsets 2 6.5         # where the hits and sung words are
+python3 tools/beatfit.py song.mp3 align 28.88 100.70   # Chorus 2 is exactly 144 beats after Chorus 1
+```
+
+Claude can't listen, so EST times are located from the audio and then confirmed by ear in a `--debug` test render.
 
 ## Status
 
 | Section | Shots | State |
 |---|---|---|
-| Chorus 1 and 2 | C-1 to C-6 | built (Chorus 2 timing partly estimated) |
+| Intro | I-1, I-3, I-2 | approved |
+| Chorus 1 and 2 | C-1 to C-6 | approved; C-3 arm comes in from the side; Chorus 2 times confirmed by ear |
+| Verse 1 | V1-1 to V1-4 | next |
 | Everything else | | not started; build in song order |
 
-Times marked EST in `timeline.js`, and the beat-grid anchors, should be checked by ear as sections are built.
+Times still marked EST in `timeline.js` should be checked by ear as their sections are built.

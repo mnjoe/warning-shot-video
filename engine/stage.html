@@ -3,25 +3,41 @@
 <svg id="stage" width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"><defs id="defs"></defs><g id="root"></g></svg>
 <script src="core.js"></script>
 <script src="timeline.js"></script>
+<script src="scenes/intro.js"></script>
 <script src="scenes/chorus.js"></script>
 <script>
 // Shot list in song order. Add sections here as they get built.
 const SHOTS = [
+  ...introShots(SONG.intro),
   ...chorusShots(SONG.chorus.one, false),
   ...chorusShots(SONG.chorus.two, true),
 ].sort((a, b) => a.a - b.a);
 const LYRICS = [
+  ...introLyrics(SONG.intro),
   ...chorusLyrics(SONG.chorus.one.lyr),
   ...chorusLyrics(SONG.chorus.two.lyr),
 ];
-function render(t) {
+// Network chrome comes on at I-2 and slides in; shots with chrome: false skip it.
+function chrome(t, r) {
+  const k = easeOut(prog(t, SONG.intro.cuts[2], SONG.intro.cuts[2] + 0.45));
+  return `<g opacity="${f(k)}">${R.liveTag(t, r.live || 'live')}${R.bug(t)}</g>`
+    + `<g transform="translate(0 ${f(48 * (1 - k))})">${R.ticker(t, SONG.ticker.items, SONG.ticker.start)}</g>`;
+}
+// Review aid for test renders only (render.py --debug): shot id, song time, beat. Tooling, not part of any theme.
+function debugTag(t, id) {
+  const b = beat(t), s = `${id}   ${t.toFixed(2)}s   beat ${b.toFixed(2)}`;
+  return `<g><rect x="${W - 372}" y="628" width="356" height="34" rx="4" fill="#000" opacity="0.7"/>`
+    + `<text x="${W - 26}" y="652" font-family="monospace" font-size="20" fill="#fff" text-anchor="end">${s}</text></g>`;
+}
+function render(t, dbg) {
   const sh = SHOTS.find(s => t >= s.a && t < s.b) || SHOTS[SHOTS.length - 1];
   const lt = t - sh.a, r = sh.fn(t, lt);
   let out = r.svg;
   if (sh.chyron) out += R.chyron(lt, sh.chyron[0], sh.chyron[1]);
   const ly = LYRICS.find(L => t >= L.a && t < L.b);
   if (ly && !ly.hide) out += R.lyrics(t, ly);
-  out += R.liveTag(t, r.live || 'live') + R.bug(t) + R.ticker(t, SONG.ticker.items, SONG.ticker.start);
+  if (sh.chrome !== false) out += chrome(t, r);
+  if (dbg) out += debugTag(t, sh.id);
   document.getElementById('root').innerHTML = out;
   return sh.id;
 }

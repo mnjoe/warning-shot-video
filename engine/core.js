@@ -11,11 +11,14 @@ const backOut = t => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow
 const f = n => (Math.round(n * 100) / 100);
 function rnd(seed) { const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
 
-// Beat grid: piecewise anchors from SONG.beat (Suno drifts a little, so each section has its own phase).
+// Beat grid: piecewise anchors from SONG.beat (Suno drifts a little, so each region has its own fit).
+// An anchor may carry its own period; otherwise SONG.beat.period is used. Integer values of beat(t) are on the beat.
 function beat(t) {
   const g = SONG.beat, a = [...g.anchors].reverse().find(x => t >= x.from) || g.anchors[0];
-  return (t - a.phase) / g.period;
+  return (t - a.phase) / (a.period || g.period);
 }
+// Theme flavor text (network name and so on). Scenes may read it; story words live in SONG.labels.
+const copy = k => TK.copy[k];
 
 // ---------- Theme registry ----------
 // A theme file calls registerTheme(name, def). def = { extends?, fonts, tokens, rigs }.

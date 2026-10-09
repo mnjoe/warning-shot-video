@@ -4,22 +4,24 @@ const SONG = {
   audio: 'Warning_Shot_-_v6_-_candidate.mp3',   // not in the repo; upload it per chat
   length: 238.82,
   beat: {
-    period: 0.48812,   // 122.92 BPM, measured from the audio
-    // phase fits per region (seconds). Measured with spectral flux; refine as sections get built.
+    period: 0.49775,   // 120.5 BPM, fitted to the kick/stomp onsets (the notes' "123 BPM" was off)
+    // Each anchor is fitted to onsets in its region (low-band spectral flux). Mean error is about 2% of a beat.
+    // Regions not built yet are unfitted: refit with the analysis in the README before relying on beat() there.
     anchors: [
-      { from: 0, phase: 0.215 },
-      { from: 27, phase: 0.27 },
-      { from: 59.5, phase: 0.06 },
-      { from: 99, phase: 0.44 },
-      { from: 140, phase: 0.065 },
-      { from: 180, phase: 0.45 },
-      { from: 210, phase: 0.08 },
+      { from: 0, period: 0.49775, phase: 0.4875 },    // Intro, Verse 1, Chorus 1 (fitted 0 to 44.8)
+      { from: 97, period: 0.49775, phase: 0.470 },    // Chorus 2 (fitted 97 to 117)
     ],
   },
   // On-screen labels the storyboard specifies. Story content, not style: every theme shows these words.
   labels: {
     ship: 'OPENAI', sandbox: 'SANDBOX', cannon: 'WARNING SHOT', hand: 'AI LAB',
     rogueHeadline: 'IT WENT ROGUE!', biggest: '“The biggest in the field!”',
+    gym: 'EXPLOITGYM', target: 'TARGET',
+    levers: ['CLASSIFIERS', 'AUTO-REVIEW', 'CHAIN-OF-THOUGHT MONITOR'],
+  },
+  // Network headline banners (story text). Not speaker credits; those are chyrons.
+  headlines: {
+    safetyOff: 'SAFETY SYSTEMS TAKE THE DAY OFF',
   },
   chyrons: {
     benaich: ['NATHAN BENAICH', 'on the Hugging Face incident'],
@@ -38,18 +40,32 @@ const SONG = {
       'The original prompt was never published',
     ],
   },
+  intro: {
+    // I-1 logo sting, I-3 count-in, I-2 ship sails in. I-2 start was EST 5.50; 5.47 is the beat it snaps to.
+    cuts: [0, 2.48, 5.47, 11.98],   // approved
+    count: [2.45, 2.95, 3.46, 3.97],   // measured onsets of "One, two, three, four!"
+    wipe: [1.95, 2.45],                // parchment wipe starts on the big hit at 1.95
+  },
   chorus: {
     // cuts: C-1..C-6 starts + end. fireAt: crowd shout. lyr: [l1, shout, l2, l3, l3b, l4, l5, l6, l6b, end]
     one: {
       cuts: [27.86, 30.37, 31.86, 35.85, 37.34, 39.82, 44.79], fireAt: 28.88,
       lyr: [27.91, 28.88, 30.16, 31.98, 33.90, 35.85, 37.22, 39.77, 42.30, 44.57],
     },
-    two: { // shout, l3b, l6b are EST (same offsets as chorus 1)
-      cuts: [99.54, 102.03, 103.54, 107.51, 108.99, 111.48, 116.47], fireAt: 100.70,
-      lyr: [99.73, 100.70, 101.97, 103.69, 105.61, 107.27, 108.95, 111.48, 114.01, 116.33],
+    two: { // Chorus 2 is exactly 144 beats (71.67 s) after Chorus 1. shout, l3b, l6b were EST; now taken from
+           // cross-correlating Chorus 2's vocal onsets against Chorus 1 (corr 0.81 to 0.86). l1 and l4 stay as tapped
+           // (the alignment suggested 99.58 and 107.50); approved by ear in the Chorus 2 check render.
+      cuts: [99.54, 102.03, 103.54, 107.51, 108.99, 111.48, 116.47], fireAt: 100.55,
+      lyr: [99.73, 100.55, 101.97, 103.69, 105.56, 107.27, 108.95, 111.48, 113.98, 116.33],
     },
   },
 };
+
+function introLyrics(I) {
+  const [c1, c2, c3, c4] = I.count;
+  const w = (s, at) => ({ s, style: 'shout', at });
+  return [{ a: c1 - 0.05, b: I.cuts[2] - 0.1, lines: [Object.assign([w('One, ', c1), w('two, ', c2), w('three, ', c3), w('four!', c4)], { reserve: true })] }];
+}
 
 function chorusLyrics(L) {
   const [l1, shout, l2, l3, l3b, l4, l5, l6, l6b, end] = L;
