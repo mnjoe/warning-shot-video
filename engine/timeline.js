@@ -47,6 +47,8 @@ const SONG = {
     // Final chorus and outro
     otherAgents: '“We’ve found other agents!”', airGap: 'AIR GAP: NONE',
     protest: ['SHOW US', 'THE', 'PROMPT!'], logs: 'LOGS', metr: 'METR', redwood: 'REDWOOD',
+    // The two lab officers' ID badges: one approves the change, the other ships it.
+    officers: ['LGTM', 'SHIP IT'],
   },
   counts: { board: 1200, trip: 700 },
   // Network headline banners (story text). Not speaker credits; those are chyrons.

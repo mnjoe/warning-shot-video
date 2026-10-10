@@ -19,7 +19,7 @@ function shotLookout(t, lt, V) {
   let s = R.sky(H) + R.clouds(t);
   s += R.crowsNest({ x: 300, y: 780, s: 1.15 });
   const shrug = easeOut(prog(t, 66.4, 66.8)) * (1 - easeIn(prog(t, 67.3, 67.6)));
-  s += R.officer({ x: 300, y: 780 - 420 * 1.15, s: 1.15, t, spyglass: 1 - shrug, shrug, look: 2 });
+  s += R.officer({ x: 300, y: 780 - 420 * 1.15, s: 1.15, t, spyglass: 1 - shrug, shrug, look: 2, name: SONG.labels.officers[0] });
   s += R.crowsNestFront({ x: 300, y: 780, s: 1.15 });
   const notes = lerp(8, 60, easeOut(prog(t, V.cuts[1], L.more))) + 40 * easeOut(prog(t, L.more, L.more + 0.4));
   const view = R.noticeBoard({ x: 0, y: -150, s: 0.62, title: SONG.labels.board, notes, t });
@@ -66,8 +66,8 @@ function shotLeads(t, lt, V) {
   const wipe = ease(prog(t, w0, w1));
   s += R.corkboard({ x: 470, y: 380, s: 1, wipe });
   const scr = t > L.july5b ? 1 : 0, sh = easeOut(prog(t, w1, w1 + 0.3));
-  s += R.officer({ x: 900, y: 700, s: 1.55, t, scratch: scr * (1 - sh), shrug: sh, flip: true, frown: true });
-  s += R.officer({ x: 1110, y: 690, s: 1.45, t, phase: 0.6, scratch: (t > L.july5b + 0.5 ? 1 : 0) * (1 - sh), shrug: sh, flip: true });
+  s += R.officer({ x: 900, y: 700, s: 1.55, t, scratch: scr * (1 - sh), shrug: sh, flip: true, frown: true, name: SONG.labels.officers[0] });
+  s += R.officer({ x: 1110, y: 690, s: 1.45, t, phase: 0.6, scratch: (t > L.july5b + 0.5 ? 1 : 0) * (1 - sh), shrug: sh, flip: true, name: SONG.labels.officers[1] });
   [L.july5b + 0.3, L.july5b + 0.8].forEach((at, j) => { s += R.sfx(j ? 1150 : 920, j ? 330 : 310, backOut(prog(t, at, at + 0.25)) * (1 - sh), '?', j ? 12 : -12, 90); });
   if (t > w0 - 0.3 && t < w1 + 0.4) {
     const hx = lerp(150, 820, wipe), hy = 390 + Math.sin(wipe * Math.PI * 4) * 50, inn = easeOut(prog(t, w0 - 0.3, w0)), out = easeIn(prog(t, w1, w1 + 0.4));
@@ -117,7 +117,7 @@ function shotMouse(t, lt, V) {
   const bob = Math.sin(t * 2.1 + 1) * 6, bx = 700, by = 590 + bob, S = 1.7, q = V.squeak;
   s += R.lifeboat({ x: bx, y: by, s: S, t, hole: 1, label: SONG.labels.sandbox, peek: t < q - 0.05 ? easeOut(prog(t, q - 1.6, q - 1.3)) : 0 });
   const startled = easeOut(prog(t, q, q + 0.2));
-  s += R.officer({ x: 150, y: 700, s: 1.5, t, scratch: t > V.lyr.mouseB && t < q ? 1 : 0, shrug: startled, look: 3, frown: t > q });
+  s += R.officer({ x: 150, y: 700, s: 1.5, t, scratch: t > V.lyr.mouseB && t < q ? 1 : 0, shrug: startled, look: 3, frown: t > q, name: SONG.labels.officers[1] });
   if (t > q - 0.05) {
     const run = prog(t, q - 0.05, q + 0.9), hx = bx + 118 * S, hy = by - 40 * S;
     s += R.mouse({ x: hx + easeIn(run) * 700, y: lerp(hy + 30, 640, clamp(run * 4)), s: 1.3, t, run: t * 7 });

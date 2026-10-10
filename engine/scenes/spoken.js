@@ -35,14 +35,14 @@ function shotWhoToTell(t, lt, S) {
   const split = S.lyr.s6b - 0.1;
   if (t < split) {
     let s = R.sky(H) + R.clouds(t) + R.crowsNest({ x: 360, y: 840, s: 1.15 });
-    s += R.officer({ x: 360, y: 840 - 420 * 1.15, s: 1.15, t, spyglass: 1, look: 2 }) + R.crowsNestFront({ x: 360, y: 840, s: 1.15 });
+    s += R.officer({ x: 360, y: 840 - 420 * 1.15, s: 1.15, t, spyglass: 1, look: 2, name: SONG.labels.officers[0] }) + R.crowsNestFront({ x: 360, y: 840, s: 1.15 });
     s += R.spyView(890, 400, 210, R.cabinWall(t), R.noticeBoard({ x: 0, y: -150, s: 0.62, title: SONG.labels.board, notes: 60, t }));
     return { svg: R.flashback(t, s), live: 'replay' };
   }
   let s = R.deck(t);
   const p = easeOut(prog(t, split, split + 0.35));
-  s += R.officer({ x: 470, y: 660, s: 1.6, t, point: p, look: 3, frown: true });
-  s += R.officer({ x: 810, y: 660, s: 1.6, t, phase: 0.5, point: p, flip: true, look: 3, frown: true });
+  s += R.officer({ x: 470, y: 660, s: 1.6, t, point: p, look: 3, frown: true, name: SONG.labels.officers[0] });
+  s += R.officer({ x: 810, y: 660, s: 1.6, t, phase: 0.5, point: p, flip: true, look: 3, frown: true, name: SONG.labels.officers[1] });
   s += R.sfx(640, 300, backOut(prog(t, split + 0.4, split + 0.65)), '?!', 0, 96);
   // The deadpan seagull answers the question.
   const d = S.duh, k = backOut(prog(t, d - 0.25, d - 0.05));

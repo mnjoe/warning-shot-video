@@ -743,7 +743,7 @@ registerTheme('pirate-flat', {
         ${txt(0, 12, o.text, size, col('live'), { font: TK.font.display })}</g>`;
     },
     // A ship's officer from the AI lab: tricorn hat, lab coat, nitrile gloves. Generic, not anyone real.
-    // o: x,y (feet),s,t,phase,flip,scratch (0..1 hand to head),spyglass (0..1 raised),point (0..1 arm out),shrug (0..1),look,frown,hat (false = bareheaded)
+    // o: x,y (feet),s,t,phase,flip,scratch (0..1 hand to head),spyglass (0..1 raised),point (0..1 arm out),shrug (0..1),look,frown,hat (false = bareheaded),name (on the ID badge)
     officer(o) {
       const ink = col('ink'), t = o.t, ph = o.phase || 0, sc = o.scratch || 0, spy = o.spyglass || 0, pt = o.point || 0, sh = o.shrug || 0, look = o.look || 0;
       const blink = ((t + ph * 1.9) % 3.1) < 0.11;
@@ -768,8 +768,9 @@ registerTheme('pirate-flat', {
         ${back}
         <path d="M-26 -104 Q0 -112 26 -104 L32 -32 L-32 -32 Z" fill="${col('labCoat')}" stroke="${ink}" stroke-width="${lw('base')}" stroke-linejoin="round"/>
         <line x1="2" y1="-104" x2="2" y2="-34" stroke="${col('labCoatShade')}" stroke-width="${lw('base')}"/>
-        <circle cx="10" cy="-84" r="3" fill="${col('labButton')}" stroke="${ink}" stroke-width="1"/><circle cx="10" cy="-62" r="3" fill="${col('labButton')}" stroke="${ink}" stroke-width="1"/>
-        <rect x="-20" y="-92" width="18" height="14" rx="2" fill="${col('badge')}" stroke="${ink}" stroke-width="1"/><rect x="-20" y="-92" width="18" height="4" fill="${col('badgeStrip')}"/>
+        <circle cx="12" cy="-84" r="3" fill="${col('labButton')}" stroke="${ink}" stroke-width="1"/><circle cx="10" cy="-62" r="3" fill="${col('labButton')}" stroke="${ink}" stroke-width="1"/>
+        <rect x="-25" y="-94" width="30" height="19" rx="2" fill="${col('badge')}" stroke="${ink}" stroke-width="1"/><rect x="-25" y="-94" width="30" height="4.5" fill="${col('badgeStrip')}"/>
+        ${o.name ? `<g transform="translate(-10 0) scale(${o.flip ? -1 : 1} 1) translate(10 0)">${txt(-10, -79.5, o.name, fitSize(o.name, 10, TK.font.display, 26), ink, { font: TK.font.display })}</g>` : ''}
         <circle cx="4" cy="-134" r="26" fill="${col('skin')}" stroke="${ink}" stroke-width="${lw('base')}"/>
         ${eyes}${mouth}
         ${o.hat === false ? `<path d="M-20 -150 Q4 -170 28 -150" fill="none" stroke="${col('woodDark')}" stroke-width="${lw('limb')}" stroke-linecap="round"/>` : R.tricorn({ x: 4, y: -152, s: 1 })}

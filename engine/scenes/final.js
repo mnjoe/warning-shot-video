@@ -14,7 +14,7 @@ function shotFinalCrew(t, lt, F) {
 function shotFeet(t, lt, F) {
   let s = R.deck(t);
   const fall = prog(t, F.thud - 0.45, F.thud), ballY = lerp(-80, 640, easeIn(fall)), hit = t >= F.thud;
-  s += R.officer({ x: 560, y: 660, s: 1.7, t, look: hit ? 0 : 2, shrug: hit ? easeOut(prog(t, F.thud, F.thud + 0.2)) : 0, frown: hit });
+  s += R.officer({ x: 560, y: 660, s: 1.7, t, name: SONG.labels.officers[1], look: hit ? 0 : 2, shrug: hit ? easeOut(prog(t, F.thud, F.thud + 0.2)) : 0, frown: hit });
   s += R.cannonball(700, hit ? 630 : ballY - 30);
   if (hit) s += R.dust(700, 660, (t - F.thud) / 0.6, 2.4) + R.impact(700, 660, (t - F.thud) / 0.4, 2) + R.sfx(860, 520, backOut(prog(t, F.thud, F.thud + 0.2)), copy('thud'), -6, 70);
   return { svg: s };
