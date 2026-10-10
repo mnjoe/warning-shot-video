@@ -22,6 +22,11 @@ python3 render.py --theme pirate-flat --from 0 --to 11.98 --audio song.mp3 --deb
 song time; the video starts at `-preroll`. Render the whole thing with `--from=-2 --to 238.82 --audio song.mp3` (add `--res 1080 --final` for the upload)
 (negative `--from` pads the audio with silence; use the `=` form so the minus sign isn't read as a flag).
 
+**Stinger.** `tools/stinger.py` synthesizes the 2 s PNN logo sting that plays in the pre-roll (no samples, nothing
+licensed): a whoosh as the wheel spins in, a timpani boom and ship's bell as it lands, then a brass "da-da-DAAA" in
+D minor (the song's key) that rings into the music. Mix it in when muxing the final:
+`ffmpeg -i video.mp4 -i stinger.wav -i song.mp3 -filter_complex "[2:a]adelay=2000:all=1[s];[1:a][s]amix=inputs=2:normalize=0:duration=longest[a]" -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 320k -shortest out.mp4`
+
 `--debug` burns the shot id, song time and beat number into the lower right so timing notes can be exact ("move V1-3 two frames later"). Use it for stills and test renders only, never for the final.
 
 Needs Python Playwright with Chromium, ffmpeg, and Pillow (all present in Claude's sandbox).
