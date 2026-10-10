@@ -17,6 +17,7 @@ ap.add_argument('--res', type=int, default=720, choices=[720, 1080])
 ap.add_argument('--audio', help='song MP3; muxes the matching slice under the video')
 ap.add_argument('--stills', help='comma-separated times; writes PNGs and a contact sheet instead of video')
 ap.add_argument('--debug', action='store_true', help='burn shot id, time and beat into a corner (review renders only)')
+ap.add_argument('--final', action='store_true', help='upload quality: sharper frame capture and encode (slower)')
 ap.add_argument('--out', required=True)
 a = ap.parse_args()
 
@@ -50,11 +51,11 @@ with sync_playwright() as p:
     n = int(round((a.t1 - a.t0) * a.fps))
     silent = a.out + '.noaudio.mp4' if a.audio else a.out
     ff = subprocess.Popen(['ffmpeg', '-y', '-v', 'error', '-f', 'image2pipe', '-framerate', str(a.fps), '-c:v', 'mjpeg', '-i', '-',
-                           '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-pix_fmt', 'yuv420p', silent], stdin=subprocess.PIPE)
+                           '-c:v', 'libx264', '-preset', 'medium' if a.final else 'veryfast', '-crf', '16' if a.final else '20', '-pix_fmt', 'yuv420p', silent], stdin=subprocess.PIPE)
     st = time.time()
     for i in range(n):
         pg.evaluate(f'render({a.t0 + i / a.fps:.4f}, {str(a.debug).lower()})')
-        ff.stdin.write(pg.screenshot(type='jpeg', quality=92))
+        ff.stdin.write(pg.screenshot(type='jpeg', quality=98 if a.final else 92))
         if i % 150 == 0: print(f'{i}/{n} frames, {time.time() - st:.0f}s', flush=True)
     ff.stdin.close(); ff.wait()
     print(f'{n} frames in {time.time() - st:.0f}s; errors: {errs[:5]}')
@@ -64,7 +65,7 @@ if a.audio:
     pad = max(0.0, -a.t0)   # pre-roll: negative song time is silence before the track starts
     fx = f'adelay={int(round(pad * 1000))}:all=1,' if pad else 'afade=t=in:d=0.15,'
     subprocess.run(['ffmpeg', '-y', '-v', 'error', '-ss', str(max(0.0, a.t0)), '-t', str(d - pad), '-i', a.audio, '-vn',
-                    '-af', fx + f'apad,atrim=0:{d:.3f},afade=t=out:st={max(0, d - 0.43):.2f}:d=0.43', '-c:a', 'aac', '-b:a', '192k', a.out + '.m4a'], check=True)
+                    '-af', fx + f'apad,atrim=0:{d:.3f},afade=t=out:st={max(0, d - 0.43):.2f}:d=0.43', '-c:a', 'aac', '-b:a', '320k' if a.final else '192k', a.out + '.m4a'], check=True)
     subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', silent, '-i', a.out + '.m4a', '-map', '0:v', '-map', '1:a',
                     '-c', 'copy', '-shortest', '-movflags', '+faststart', a.out], check=True)
     os.remove(silent); os.remove(a.out + '.m4a')

@@ -19,7 +19,7 @@ python3 render.py --theme pirate-flat --from 0 --to 11.98 --audio song.mp3 --deb
 ```
 
 **Pre-roll.** `SONG.preroll` (2.0 s) is silence before the music, so the PNN logo gets a longer open. All times stay in
-song time; the video starts at `-preroll`. Render the whole thing with `--from=-2 --to 238.82 --audio song.mp3`
+song time; the video starts at `-preroll`. Render the whole thing with `--from=-2 --to 238.82 --audio song.mp3` (add `--res 1080 --final` for the upload)
 (negative `--from` pads the audio with silence; use the `=` form so the minus sign isn't read as a flag).
 
 `--debug` burns the shot id, song time and beat number into the lower right so timing notes can be exact ("move V1-3 two frames later"). Use it for stills and test renders only, never for the final.
@@ -204,7 +204,8 @@ Claude can't listen, so EST times are located from the audio and then confirmed 
 | Verse 1 | V1-1 to V1-4 | approved; V1-3/V1-4 cut moved to 25.37; sign drop and clunks set by ear |
 | Verse 2 | V2-1 to V2-6 | approved |
 | Verse 3 | V3-1 to V3-8 | approved |
-| Spoken Word, Verse 4, Verse 5, Final Chorus, Outro | | built on branch `wip`, awaiting review |
+| Spoken Word, Verse 4, Verse 5, Final Chorus, Outro | | approved |
+| Final render | | 1080p, 30 fps, 2 s pre-roll, no debug tag |
 | Everything else | | not started; build in song order |
 
 Times still marked EST in `timeline.js` should be checked by ear as their sections are built.
