@@ -4,12 +4,13 @@
   python3 tools/stinger.py out.wav
 
 Timed to the I-1 animation (video time): whoosh while the wheel spins in, a boom and a ship's bell as it lands
-(~1.05 s), then a brass "da-da-DAAA" in D minor (the song's key) as the banner unfurls, ringing into the music at 2.0 s.
+(~1.05 s), then a brass "da-da-DAAA" in D minor (the song's key) as the banner unfurls. The last chord holds and then fades
+out by ~2.95 s; with a 3.5 s pre-roll that leaves a moment of silence before the song.
 """
 import sys, numpy as np, scipy.io.wavfile as wav, scipy.signal as sg
 
 SR = 48000                     # matches the song MP3
-LEN = 2.6                      # the tail rings ~0.6 s under the first bars of the song
+LEN = 3.1                      # the last chord holds, then fades out by ~2.95 s
 n = int(SR * LEN)
 rng = np.random.default_rng(7)
 t = np.arange(n) / SR
@@ -56,12 +57,12 @@ def bell(f0, dur):
 place(bell(hz('D5'), 1.5) / 3.4, 1.05, 0.55, 0.35)
 
 # 4. Brass fanfare: A3, A3, then a D-minor chord. Additive saw voices with a brassy brightness swell and vibrato.
-def brass(f0, dur, swell=0.06, vib=0.0):
+def brass(f0, dur, swell=0.06, vib=0.0, sustain=0.75):
     m = int(SR * dur); tt = np.arange(m) / SR; s = np.zeros(m)
     for det in (-0.004, 0.0, 0.005):
         f = f0 * (1 + det) * (1 + vib * 0.006 * np.sin(2 * np.pi * 5.5 * tt) * np.minimum(1, tt / 0.25))
         ph = 2 * np.pi * np.cumsum(f) / SR
-        bright = np.minimum(1, tt / swell) * (0.75 + 0.25 * np.exp(-tt * 3))
+        bright = np.minimum(1, tt / swell) * (sustain + (1 - sustain) * np.exp(-tt * 3))
         for h in range(1, 18):
             if f0 * h > 9000: break
             s += np.sin(h * ph) / h * np.exp(-(h - 1) * (1.15 - bright) * 0.55)
@@ -71,15 +72,18 @@ place(brass(hz('A3'), 0.13) * 0.9, 1.30, 0.5, -0.2)
 place(brass(hz('A3'), 0.13) * 0.9, 1.45, 0.5, -0.2)
 chord = [('D3', -0.4, 0.8), ('A3', 0.0, 0.7), ('D4', 0.25, 0.9), ('F4', 0.45, 0.6)]
 for note, pan, g in chord:
-    s = brass(hz(note), 0.98, swell=0.09, vib=1.0)
-    s *= np.concatenate([np.ones(int(0.55 * SR)), np.linspace(1, 0, len(s) - int(0.55 * SR))])
-    place(s * g, 1.60, 0.42, pan)
+    # bum-bum-bum-BUMMMMM: hold the chord ~0.55 s with a slight swell, then a long smooth fade (~0.8 s) that stays
+    # full for its first half and tails off at the end.
+    hold, fade = 0.55, 0.80
+    s = brass(hz(note), hold + fade + 0.1, swell=0.09, vib=1.0, sustain=0.92)[:int((hold + fade) * SR)]
+    env = np.concatenate([np.linspace(0.8, 1.0, int(hold * SR)), np.cos(np.linspace(0, np.pi / 2, int((hold + fade) * SR) - int(hold * SR))) ** 2])
+    place(s * env * g, 1.60, 0.42, pan)
 
 # 5. A little room: convolve with a short decaying-noise impulse response.
 ir = rng.standard_normal(int(0.55 * SR)) * np.exp(-np.arange(int(0.55 * SR)) / SR * 9)
 ir /= np.abs(ir).sum() / 6
 wet = np.stack([sg.fftconvolve(mix[:, c], ir)[:n] for c in (0, 1)], 1)
 out = mix * 0.85 + wet * 0.35
-out *= np.concatenate([np.ones(int(2.15 * SR)), np.linspace(1, 0, n - int(2.15 * SR))])[:, None]   # gone ~0.45 s into the song
+out *= np.concatenate([np.ones(int(2.95 * SR)), np.cos(np.linspace(0, np.pi / 2, n - int(2.95 * SR))) ** 2])[:, None]   # only trims the reverb tail
 out = out / np.abs(out).max() * 0.56                                                              # peak about -5 dBFS: a touch above the song's intro
 wav.write(sys.argv[1] if len(sys.argv) > 1 else 'stinger.wav', SR, (out * 32767).astype(np.int16))

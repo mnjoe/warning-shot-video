@@ -5,7 +5,7 @@ const SONG = {
   length: 238.82,
   // Silence before the music, so the PNN logo gets a longer open. Every time in this file is song time;
   // the video starts at -preroll (render.py pads the audio with silence for negative times).
-  preroll: 2.0,
+  preroll: 3.5,   // stinger (the last chord fades out by about 2.95 s), a moment of silence, then the music
   beat: {
     period: 0.49775,   // 120.5 BPM, fitted to the kick/stomp onsets (the notes' "123 BPM" was off)
     // Each anchor is fitted to onsets in its region (low-band spectral flux). Mean error is about 2% of a beat.
