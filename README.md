@@ -215,7 +215,7 @@ Claude can't listen, so EST times are located from the audio and then confirmed 
 | Verse 2 | V2-1 to V2-6 | approved |
 | Verse 3 | V3-1 to V3-8 | approved |
 | Spoken Word, Verse 4, Verse 5, Final Chorus, Outro | | approved |
-| Final render | | 1080p, 30 fps, 2 s pre-roll, no debug tag |
+| Final render | | 1080p, 30 fps, 3.5 s pre-roll with the PNN stinger, synthesized sound effects, no debug tag (4:02.3) |
 | Everything else | | not started; build in song order |
 
 Times still marked EST in `timeline.js` should be checked by ear as their sections are built.
