@@ -127,6 +127,8 @@ const SONG = {
     pin: 61.12,          // the first note goes up (beat 122)
     clangs: [70.11, 70.61],
     fell: 73.12,         // the shack falls in the drum stop (72.4 to 74.1)
+    fireworks: [[71.70, 300, 150, 'live'], [72.12, 960, 120, 'brass'], [72.60, 640, 200, 'star'], [74.13, 220, 230, 'brass'], [74.63, 1040, 170, 'live'],
+      [75.12, 520, 120, 'star'], [75.62, 820, 160, 'live'], [76.08, 340, 140, 'brass'], [76.58, 1000, 230, 'star'], [77.08, 600, 150, 'live']],   // [time, x, y, color]
     banner: 75.62,       // INDEPENDENCE (Part E)
     wipeAt: [82.6, 83.4],// EST: "so they wipe it instead"
     light: 93.40,        // EST: the window lights on "finds a stranger"

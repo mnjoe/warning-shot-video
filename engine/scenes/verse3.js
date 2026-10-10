@@ -41,9 +41,7 @@ function shotBell(t, lt, V) {
 // V3-4: fireworks over the dock at night. The shack falls in the drum stop; the bots raise INDEPENDENCE.
 function shotIndependence(t, lt, V) {
   let s = R.nightSky(t, 470) + R.seaRect(t, 470, H, { fillKey: 'nightDeep' });
-  const fw = [[71.70, 300, 150, 'live'], [72.12, 960, 120, 'brass'], [72.60, 640, 200, 'star'], [74.13, 220, 230, 'brass'], [74.63, 1040, 170, 'live'],
-    [75.12, 520, 120, 'star'], [75.62, 820, 160, 'live'], [76.08, 340, 140, 'brass'], [76.58, 1000, 230, 'star'], [77.08, 600, 150, 'live']];
-  fw.forEach(([at, x, y, c]) => { s += R.firework(x, y, prog(t, at, at + 0.9), c); });
+  V.fireworks.forEach(([at, x, y, c]) => { s += R.firework(x, y, prog(t, at, at + 0.9), c); });
   s += R.dock(-40, 1320, 600, 40);
   const fall = prog(t, V.fell - 0.05, V.fell + 0.35);
   if (fall < 1) s += `<g transform="translate(640 542) rotate(${f(easeIn(fall) * 12)}) scale(1 ${f(1 - easeIn(fall) * 0.85)}) translate(-640 -542)">${R.shack({ x: 640, y: 542, s: 1.05, label: SONG.labels.artifactory, t })}</g>`;

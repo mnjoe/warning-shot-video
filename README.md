@@ -27,6 +27,11 @@ licensed): a whoosh as the wheel spins in, a timpani boom and ship's bell as it 
 D minor (the song's key) that rings into the music. Mix it in when muxing the final:
 `ffmpeg -i video.mp4 -i stinger.wav -i song.mp3 -filter_complex "[2:a]adelay=2000:all=1[s];[1:a][s]amix=inputs=2:normalize=0:duration=longest[a]" -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 320k -shortest out.mp4`
 
+**Sound effects.** `tools/sfx.py song.mp3 outdir/` synthesizes the effects layer (no samples) with every cue read
+from `timeline.js`, so effects follow the animation if a time changes. It writes `sfx_stem.wav` (effects alone),
+`mix.wav` (song + effects, music dipped under the squeak) and `cues.txt`. For the final, use `mix.wav` in place of
+the song in the stinger command above, delayed by the pre-roll.
+
 `--debug` burns the shot id, song time and beat number into the lower right so timing notes can be exact ("move V1-3 two frames later"). Use it for stills and test renders only, never for the final.
 
 Needs Python Playwright with Chromium, ffmpeg, and Pillow (all present in Claude's sandbox).
