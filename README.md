@@ -155,7 +155,7 @@ Inherited from `pirate-flat` unless overridden. `t` is song time in seconds, `lt
 | `quoteCard(o)`, `terminal(o)`, `bigStamp(x, y, k, text, rot, size)`, `tagLabel(o)` | quote card, prompt terminal (`lines, chars`), rubber stamp, corner tag |
 | `marquee(o)` | blinking bulb sign: `x, y, s, text, t` |
 | `warBot(o)`, `pixelBot(o)`, `pixelBurst(x, y, p, s)` | the headline war-bot (our own design), the 8-bit bot (`laugh`), the pixel burst |
-| `arcadeCabinet(o)` | `x, y, s, t, title, level, sub, score, press` |
+| `arcadeCabinet(o)` | `x, y, s, t, title, level, sub, score, press, sprite (the 8-bit bot on screen)` |
 | `lagoon(o)`, `toyBoat(o)`, `coin(x, y, p, s)`, `confetti(x, y, p)` | the generic coin-loop lagoon (not any game's art) and confetti |
 | `dog(o)`, `ropeBits(x, y, p)` | the dog with the weedwhacker, shredded rope |
 | `blueprint(o)` | ship blueprint: `x, y, s, title, shipLabel` |

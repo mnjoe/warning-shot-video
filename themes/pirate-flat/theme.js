@@ -1086,7 +1086,7 @@ registerTheme('pirate-flat', {
         out += `<rect x="${f(x + Math.cos(a) * r - sz / 2)}" y="${f(y + Math.sin(a) * r - sz / 2 - 150 * s)}" width="${f(sz)}" height="${f(sz)}" fill="${col(cs[i % cs.length])}" opacity="${f(1 - easeIn(p))}"/>`; }
       return out;
     },
-    // Arcade cabinet, screen facing us. o: x,y (floor),s,t,title,level,sub,score,press (0..1 buttons)
+    // Arcade cabinet, screen facing us. o: x,y (floor),s,t,title,level,sub,score,press (0..1 buttons),sprite (the 8-bit bot on screen)
     arcadeCabinet(o) {
       const ink = col('ink'), t = o.t, blink = (t % 0.6) < 0.4, pr = o.press || 0;
       return `<g transform="translate(${f(o.x)} ${f(o.y)}) scale(${f(o.s)})">
@@ -1096,9 +1096,10 @@ registerTheme('pirate-flat', {
         ${txt(0, -500, o.title || '', fitSize(o.title || '', 46, TK.font.display, 290), col('liveText'), { font: TK.font.display })}
         <rect x="-170" y="-470" width="340" height="250" rx="10" fill="${col('ink')}"/>
         <rect x="-155" y="-455" width="310" height="220" rx="6" fill="${col('screen')}" stroke="${col('pixelDark')}" stroke-width="${lw('base')}"/>
-        ${txt(0, -390, o.level || '', fitSize(o.level || '', 40, TK.font.display, 280), col('amber'), { font: TK.font.display })}
-        ${blink ? txt(0, -340, o.sub || '', 26, col('pixel'), {}) : ''}
-        ${txt(0, -268, o.score || '', 26, col('paper'), {})}
+        ${txt(0, -404, o.level || '', fitSize(o.level || '', 40, TK.font.display, 280), col('amber'), { font: TK.font.display })}
+        ${blink ? txt(0, -368, o.sub || '', 26, col('pixel'), {}) : ''}
+        ${o.sprite ? R.pixelBot({ x: 0, y: -292, s: 0.42, t }) : ''}
+        ${txt(0, -258, o.score || '', 26, col('paper'), {})}
         <path d="M-210 -220 L210 -220 L240 -150 L-240 -150 Z" fill="${col('navyDeep')}" stroke="${ink}" stroke-width="${lw('bold')}" stroke-linejoin="round"/>
         <line x1="-120" y1="-185" x2="${f(-120 + Math.sin(t * 30) * 14 * pr)}" y2="-240" stroke="${ink}" stroke-width="${lw('limb')}" stroke-linecap="round"/><circle cx="${f(-120 + Math.sin(t * 30) * 14 * pr)}" cy="-244" r="14" fill="${col('live')}" stroke="${ink}" stroke-width="${lw('base')}"/>
         ${[30, 90, 150].map((x, i) => { const down = pr * (Math.sin(t * 40 + i * 2) > 0 ? 1 : 0); return `<ellipse cx="${x}" cy="${f(-186 + down * 4)}" rx="22" ry="${f(12 - down * 4)}" fill="${[col('live'), col('brass'), col('pixel')][i]}" stroke="${ink}" stroke-width="${lw('base')}"/>`; }).join('')}

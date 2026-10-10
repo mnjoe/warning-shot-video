@@ -18,7 +18,7 @@ function shotMorph(t, lt, V) {
 // V4-2: a bot mashes buttons at the ExploitGym cabinet on an UNSOLVED level.
 function shotArcade(t, lt, V) {
   let s = R.cabinWall(t);
-  s += R.arcadeCabinet({ x: 700, y: 700, s: 1.0, t, title: SONG.labels.gym, level: SONG.labels.level, sub: SONG.labels.insert, score: SONG.labels.score, press: 1 });
+  s += R.arcadeCabinet({ x: 700, y: 700, s: 1.0, t, title: SONG.labels.gym, level: SONG.labels.level, sub: SONG.labels.insert, score: SONG.labels.score, press: 1, sprite: true });
   s += R.bot({ x: 380, y: 700, s: 1.9, t, variant: 3, armsUp: 0.35 + 0.25 * Math.abs(Math.sin(t * 24)), sing: true });
   s += R.sfx(1060, 300, 1 + 0.08 * Math.sin(t * 30), copy('mash'), 8, 56);
   return { svg: s };

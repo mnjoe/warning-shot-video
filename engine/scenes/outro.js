@@ -69,9 +69,9 @@ function shotEndCard(t, lt, O, stinger) {
   if (stinger) {
     const pop = backOut(prog(t, O.laugh - 0.2, O.laugh + 0.1));
     // A pirate bot wearing the officers' tricorn, far too big and slipped down over its eye: mischief, not a takeover.
-    const laughing = t > O.laugh, shake = laughing ? Math.sin(t * 22) : 0;
+    const laughing = t > O.laugh && t < O.laughEnd, shake = laughing ? Math.sin(t * 22) : 0;
     s += R.bot({ x: 1170, y: 690 + (1 - pop) * 300, s: 1.45, t, variant: 1, sing: laughing, tricorn: true, hatTilt: -8 + shake * 5, shrug: laughing ? 0.6 + 0.4 * Math.abs(shake) : 0 });
-    s += R.sfx(975, 640, pop, copy('laugh'), -6, 40);   // clear of the sources list
+    s += R.sfx(975, 640, pop * (1 - prog(t, O.laughEnd, O.laughEnd + 0.4)), copy('laugh'), -6, 40);   // clear of the sources list
   }
   return { svg: s };
 }

@@ -30,7 +30,7 @@ const SONG = {
     rogueHeadline: 'IT WENT ROGUE!', biggest: '“The biggest in the field!”',
     gym: 'EXPLOITGYM', target: 'TARGET',
     levers: ['CLASSIFIERS', 'AUTO-REVIEW', 'CHAIN-OF-THOUGHT MONITOR'],
-    noInternet: 'NO INTERNET', artifactory: 'ARTIFACTORY', offlineMode: 'OFFLINE MODE:', off: 'OFF',
+    noInternet: 'NO INTERNET', artifactory: 'ARTIFACTORY', offlineMode: 'OFFLINE MODE:', off: 'Nah...',
     internet: 'THE INTERNET', board: 'MESSAGE BOARD', hf: 'HUGGING FACE', serverLog: 'SERVER LOG',
     dates: ['MAY 12', 'LATE MAY', 'JUNE 27', 'JULY 4', 'JULY 5', 'JULY 8', 'JULY 16'],
     // firstNote: the first message-board note, as quoted in OpenAI's post (May 12).
@@ -157,6 +157,7 @@ const SONG = {
     lyr: { l1: 203.03, shout1: 204.95, l2: 206.96, l3: 210.81, shout2: 212.83, l4: 215.01, end: 219.70 },   // shouts EST
     slam: 209.84, laugh: 232.0,
     encore: 213.34,             // the cannon fires again, confetti this time (Joe, beat 427)
+    laughEnd: 234.34,           // the laugh ends (Joe, beat 469)
   },
   chorus: {
     // cuts: C-1..C-6 starts + end. fireAt: crowd shout. lyr: [l1, shout, l2, l3, l3b, l4, l5, l6, l6b, end]
